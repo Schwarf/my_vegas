@@ -10,10 +10,10 @@ private:
     int N_STRAT;
     double beta;
     double V_cubic;
-    std::vector<double> JF2; // size = (N_STRAT)^(N_DIM)
-    std::vector<double> JF; // size = (N_STRAT)^(N_DIM)
-    std::vector<double> Counts; // size = (N_STRAT)^(N_DIM)
-    std::vector<double> dh; // size = (N_STRAT)^(N_DIM)
+    std::vector<double> JF2; // size = (N_STRAT)^(dimensions)
+    std::vector<double> JF; // size = (N_STRAT)^(dimensions)
+    std::vector<double> Counts; // size = (N_STRAT)^(dimensions)
+    std::vector<double> dh; // size = (N_STRAT)^(dimensions)
     // int N_EVALUATES_TRAINED; // The evaluates number used to train the stratification
     int N_EVALUATES_EXPECTED;
     int N_HYPERCUBICS;
@@ -26,7 +26,7 @@ public:
     VEGAS_Stratify(){N_DIM = 1; N_STRAT = 10; beta = 0.75; N_HYPERCUBICS_MAX = 10000;};
     ~VEGAS_Stratify(){};
 
-    // void Set_Stratification_System(int N_DIM, int NEVAL_TRAIN);
+    // void Set_Stratification_System(int dimensions, int NEVAL_TRAIN);
     void Set_Dimension(int N_DIM);
     void Set_NEVAL(int NEVAL_EXP);
     void Accumulate_Weight(int index, double weight);

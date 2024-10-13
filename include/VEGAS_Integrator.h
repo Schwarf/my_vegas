@@ -22,14 +22,14 @@ class VEGAS_Integrator
 private:
     VEGAS_INTEGRATOR_VERBOSE verb;
 
-    INTEGRAND func;
-    int N_DIM;
+    INTEGRAND function_integrand;
+    int dimensions;
     void* userdata;
 
     VEGAS_Map map;
     VEGAS_Stratify strat;
 
-    std::mt19937 rng; // Mersenne twister random number engine
+    std::mt19937 random_number_generator; // Mersenne twister random number engine
     URD dist; // uniform distribution in double in [0.0, 1.0)
 
     std::vector<double> Results;
@@ -38,7 +38,7 @@ private:
 
 public:
     VEGAS_Integrator(){verb = INFO;};
-    ~VEGAS_Integrator(){};
+    ~VEGAS_Integrator() = default;
 
     void Set_Verbose(VEGAS_INTEGRATOR_VERBOSE level);
 
