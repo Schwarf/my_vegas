@@ -48,7 +48,7 @@ int main(int argc, char const *argv[])
     
     for (double dx = 0.02; dx < 0.31; dx += 0.02)
     {
-        inter.Set_Integrand(func_weight, 1, &dx);
+        inter.Set_Integrand(std::move(func_weight), 1, &dx);
         inter.Improve_Grid();
         inter.Integration();
         cout<<"dx: "<<dx<<" res: "<<inter.Get_Result()<<" err: "<<inter.Get_Error()<<" chi2: "<<inter.Get_Chisq()<<endl;

@@ -9,7 +9,7 @@ void VEGAS_Integrator::Set_Verbose(VEGAS_INTEGRATOR_VERBOSE level)
     verb = level;
 }
 
-void VEGAS_Integrator::Set_Integrand(INTEGRAND integrand, int dim, void* param)
+void VEGAS_Integrator::Set_Integrand(VEGAS_INTEGRAND && integrand, int dim, void* param)
 {
     function_integrand = integrand;
     dimensions = dim;
@@ -63,7 +63,7 @@ void VEGAS_Integrator::Improve_Grid()
         {
             for (int i_dim = 0; i_dim < dimensions; i_dim++)
             {
-                yrnd[i_dim] = dist(random_number_generator);
+                yrnd[i_dim] = distribution(random_number_generator);
             }
             x = map.Get_X(yrnd);
             f_eval = function_integrand(x, userdata);
@@ -125,7 +125,7 @@ void VEGAS_Integrator::Improve_Grid()
             {
                 for (int i_dim = 0; i_dim < dimensions; i_dim++)
                 {
-                    yrnd[i_dim] = dist(random_number_generator);
+                    yrnd[i_dim] = distribution(random_number_generator);
                 }
                 y = strat.Get_Y(inc,yrnd);
                 x = map.Get_X(y);
@@ -233,7 +233,7 @@ void VEGAS_Integrator::Integration(double eps_rel, double eps_abs)
             {
                 for (int i_dim = 0; i_dim < dimensions; i_dim++)
                 {
-                    yrnd[i_dim] = dist(random_number_generator);
+                    yrnd[i_dim] = distribution(random_number_generator);
                 }
                 y = strat.Get_Y(inc,yrnd);
                 x = map.Get_X(y);

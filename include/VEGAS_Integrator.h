@@ -5,9 +5,11 @@
 #include "VEGAS_Stratify.h"
 #include <random> // The random number generator and distributions. c++11
 #include <vector>
+#include <functional>
+#include <any>
 
-typedef double (*INTEGRAND)(std::vector<double> x, void *param);
-using URD=std::uniform_real_distribution<double>;
+using VEGAS_INTEGRAND = std::function<double(const std::vector<double>&, void* param)>;
+//typedef double (*INTEGRAND)(std::vector<double> x, void *param);
 
 enum VEGAS_INTEGRATOR_VERBOSE
 {
@@ -22,7 +24,7 @@ class VEGAS_Integrator
 private:
     VEGAS_INTEGRATOR_VERBOSE verb;
 
-    INTEGRAND function_integrand;
+    VEGAS_INTEGRAND function_integrand;
     int dimensions;
     void* userdata;
 
@@ -30,7 +32,7 @@ private:
     VEGAS_Stratify strat;
 
     std::mt19937 random_number_generator; // Mersenne twister random number engine
-    URD dist; // uniform distribution in double in [0.0, 1.0)
+    std::uniform_real_distribution<double> distribution; // uniform distribution in double in [0.0, 1.0)
 
     std::vector<double> Results;
     std::vector<double> Sigma2;
@@ -42,7 +44,7 @@ public:
 
     void Set_Verbose(VEGAS_INTEGRATOR_VERBOSE level);
 
-    void Set_Integrand(INTEGRAND integrand, int dim, void* param);
+    void Set_Integrand(VEGAS_INTEGRAND && integrand, int dim, void* param);
     void Improve_Grid();
     void Integration(double eps_rel = 1e-3, double eps_abs = 1e-9);
     
