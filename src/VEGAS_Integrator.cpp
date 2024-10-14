@@ -4,9 +4,9 @@
 #include <chrono>
 
 
-void VEGAS_Integrator::Set_Verbose(VEGAS_INTEGRATOR_VERBOSE level)
+void VEGAS_Integrator::Set_Verbose(VegasVerbosity level)
 {
-    verb = level;
+    verbosity = level;
 }
 
 void VEGAS_Integrator::Set_Integrand(VEGAS_INTEGRAND && integrand, int dim, void* param)
@@ -46,7 +46,7 @@ void VEGAS_Integrator::Improve_Grid()
     dV = strat.Get_V_Cubic();
     map.Set_alpha(alpha_start);
     // Warm Up with just MAP improvement
-    if (verb >= INFO)
+    if (verbosity >= VegasVerbosity::Info)
     {
         std::cout<<"======================================================================================"<<std::endl;
         std::cout<<"| Warm Up the VEGAS Map                                                              |"<<std::endl;
@@ -83,22 +83,22 @@ void VEGAS_Integrator::Improve_Grid()
         Sigma2[Sigma2.size()-1] += Sig2/NEVAL_START;
         map.Update_Map();
         acc = sqrt(Sigma2[Sigma2.size()-1])/Results[Results.size()-1];
-        if (verb >= INFO)
+        if (verbosity >= VegasVerbosity::Info)
         {
             std::cout<<"| "<<std::setw(6)<<warm_iter<<" | "<<std::setw(12)<<NEVAL_START<<" | "<<std::setw(14)<<std::scientific<<std::setprecision(5)<<Results[Results.size()-1]<<" | "<<std::setw(14)<<std::scientific<<std::setprecision(5)<<sqrt(Sigma2[Sigma2.size()-1])<<" | "<<resetiosflags(std::ios::scientific)<<std::fixed<<std::setw(8)<<std::setprecision(3)<<acc*100<<"% | "<<resetiosflags(std::ios::fixed)<<std::setw(12)<<std::scientific<<std::setprecision(5)<<map.Checking_Map()<<" |"<<std::endl;
-        } 
+        }
     }
     Res = Get_Result();
     Err = Get_Error();
     acc = Err/Res;
-    if (verb >= INFO)
+    if (verbosity >= VegasVerbosity::Info)
     {
         std::cout<<"| Summary of Warm up 5 Iter:   Res = "<<std::setw(11)<<std::scientific<<std::setprecision(5)<< Res <<"   Err = "<<std::setw(11)<<std::scientific<<std::setprecision(5)<< Err <<"   Acc = "<<resetiosflags(std::ios::scientific)<<std::fixed<<std::setw(6)<<std::setprecision(3)<<acc*100<<"% |"<<std::endl;
     }
     Results.clear();
     Sigma2.clear();
 
-    if (verb >= INFO)
+    if (verbosity >= VegasVerbosity::Info)
     {
         std::cout<<"======================================================================================"<<std::endl;
         std::cout<<"| Improving the mapping grid and stratification grid                                 |"<<std::endl;
@@ -160,16 +160,16 @@ void VEGAS_Integrator::Improve_Grid()
             strat.Update_DH();
         }
         acc = sqrt(Sigma2[Sigma2.size()-1])/Results[Results.size()-1];
-        if (verb >= INFO)
+        if (verbosity >= VegasVerbosity::Info)
         {
             std::cout<<"| "<<std::setw(6)<<iter<<" | "<<std::setw(12)<<NEVAL_REAL<<" | "<<std::setw(14)<<std::scientific<<std::setprecision(5)<<Results[Results.size()-1]<<" | "<<std::setw(14)<<std::scientific<<std::setprecision(5)<<sqrt(Sigma2[Sigma2.size()-1])<<" | "<<resetiosflags(std::ios::scientific)<<std::fixed<<std::setw(8)<<std::setprecision(3)<<acc*100<<"% | "<<resetiosflags(std::ios::fixed)<<std::setw(12)<<std::scientific<<std::setprecision(5)<<map.Checking_Map()<<" |"<<std::endl;
-        } 
+        }
         if (iter % 5 == 0)
         {
             Res = Get_Result();
             Err = Get_Error();
             acc = Err/Res;
-            if (verb >= INFO)
+            if (verbosity >= VegasVerbosity::Info)
             {
                 std::cout<<"| Summary of Last 5 Iter:      Res = "<<std::setw(11)<<std::scientific<<std::setprecision(5)<< Res <<"   Err = "<<std::setw(11)<<std::scientific<<std::setprecision(5)<< Err <<"   Acc = "<<resetiosflags(std::ios::scientific)<<std::fixed<<std::setw(6)<<std::setprecision(3)<<acc*100<<"% |"<<std::endl;
             }
@@ -182,7 +182,7 @@ void VEGAS_Integrator::Improve_Grid()
             Sigma2.clear();
         }
     }
-    if (verb >= INFO)
+    if (verbosity >= VegasVerbosity::Info)
     {
         std::cout<<"======================================================================================"<<std::endl;
     }
@@ -209,7 +209,7 @@ void VEGAS_Integrator::Integration(double eps_rel, double eps_abs)
     double Ih;
     double Sig2;
     double acc;
-    if (verb >= INFO)
+    if (verbosity >= VegasVerbosity::Info)
     {
         std::cout<<"======================================================================="<<std::endl;
         std::cout<<"| Fixing the mapping grid, still improve strata and Integral          |"<<std::endl;
@@ -255,7 +255,7 @@ void VEGAS_Integrator::Integration(double eps_rel, double eps_abs)
         }
         strat.Update_DH();
         acc = sqrt(Sigma2[Sigma2.size()-1])/Results[Results.size()-1];
-        if (verb >= INFO)
+        if (verbosity >= VegasVerbosity::Info)
         {
             std::cout<<"| "<<std::setw(6)<<iter<<" | "<<std::setw(12)<<NEVAL_REAL<<" | "<<std::setw(14)<<std::scientific<<std::setprecision(5)<<Results[Results.size()-1]<<" | "<<std::setw(14)<<std::scientific<<std::setprecision(5)<<sqrt(Sigma2[Sigma2.size()-1])<<" | "<<resetiosflags(std::ios::scientific)<<std::fixed<<std::setw(8)<<std::setprecision(3)<<acc*100<<"% |"<<std::endl;
         }
@@ -266,7 +266,7 @@ void VEGAS_Integrator::Integration(double eps_rel, double eps_abs)
             Err = Get_Error();
             Chi2 = Get_Chisq();
             acc = Err/Res;
-            if (verb >= INFO)
+            if (verbosity >= VegasVerbosity::Info)
             {
                 std::cout<<"| Summary of Last 5 Iter: "<<std::setw(14)<<std::scientific<<std::setprecision(5)<< Res <<" | "<<std::setw(14)<<std::scientific<<std::setprecision(5)<< Err <<" | "<<resetiosflags(std::ios::scientific)<<std::fixed<<std::setw(8)<<std::setprecision(3)<<acc*100<<"% | Chi2 = "<<Chi2<<std::endl;
             }
@@ -290,7 +290,7 @@ void VEGAS_Integrator::Integration(double eps_rel, double eps_abs)
             }
         }
     }
-    if (verb >= INFO)
+    if (verbosity >= VegasVerbosity::Info)
     {
         Res = Get_Result();
         Err = Get_Error();

@@ -11,18 +11,18 @@
 using VEGAS_INTEGRAND = std::function<double(const std::vector<double>&, void* param)>;
 //typedef double (*INTEGRAND)(std::vector<double> x, void *param);
 
-enum VEGAS_INTEGRATOR_VERBOSE
+enum class VegasVerbosity
 {
-    NONE = 0,
-    INFO = 1,
-    DEBUG = 2,
-    ALL = 3
+    None = 0,
+    Info = 1,
+    Debug = 2,
+    All = 3
 };
 
 class VEGAS_Integrator
 {
 private:
-    VEGAS_INTEGRATOR_VERBOSE verb;
+    VegasVerbosity verbosity;
 
     VEGAS_INTEGRAND function_integrand;
     int dimensions;
@@ -39,10 +39,10 @@ private:
 
 
 public:
-    VEGAS_Integrator(){verb = INFO;};
+    VEGAS_Integrator(){ verbosity = VegasVerbosity::Info;};
     ~VEGAS_Integrator() = default;
 
-    void Set_Verbose(VEGAS_INTEGRATOR_VERBOSE level);
+    void Set_Verbose(VegasVerbosity level);
 
     void Set_Integrand(VEGAS_INTEGRAND && integrand, int dim, void* param);
     void Improve_Grid();
