@@ -44,26 +44,27 @@ double func_4D(vector<double> x, void *param)
 }
 int main(int argc, char const *argv[])
 {
-    VEGAS_Integrator inter;
+    VegasNumericalIntegration inter;
     
     for (double dx = 0.02; dx < 0.31; dx += 0.02)
     {
-        inter.Set_Integrand(std::move(func_weight), 1, &dx);
-        inter.Improve_Grid();
-        inter.Integration();
-        cout<<"dx: "<<dx<<" res: "<<inter.Get_Result()<<" err: "<<inter.Get_Error()<<" chi2: "<<inter.Get_Chisq()<<endl;
+        inter.set_integrand(std::move(func_weight), 1, &dx);
+        inter.improve_grid();
+        inter.integrate();
+        cout << "dx: " << dx << " res: " << inter.get_result() << " err: " << inter.get_error() << " chi2: " << inter.get_chisquare() << endl;
     }
     double energies[37] = {1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2200,2400,2600,2800,3000,3200,3400,3600,3800,4000,5000,6000,7000,8000,9000,10000,12000,14000,16000,18000,20000,22000,24000,26000,28000,30000};
     for (int i = 0; i < 37; i++)
     {
-        inter.Set_Integrand(func_WW2hh, 1, &energies[i]);
-        inter.Improve_Grid();
-        inter.Integration();
-        cout<<"Ecm: "<<energies[i]<<" res: "<<inter.Get_Result()/pow(energies[i],2)<<" err: "<<inter.Get_Error()/pow(energies[i],2)<<" chi2: "<<inter.Get_Chisq()<<endl;
+        inter.set_integrand(func_WW2hh, 1, &energies[i]);
+        inter.improve_grid();
+        inter.integrate();
+        cout << "Ecm: " << energies[i] << " res: " << inter.get_result() / pow(energies[i], 2) << " err: " <<
+                                                                                                           inter.get_error() / pow(energies[i], 2) << " chi2: " << inter.get_chisquare() << endl;
     }
-    inter.Set_Integrand(func_4D,4,NULL);
-    inter.Improve_Grid();
-    inter.Integration();
-    cout<<"Result: "<<inter.Get_Result()<<" Error: "<<inter.Get_Error()<<" chi2: "<<inter.Get_Chisq()<<endl;
+    inter.set_integrand(func_4D, 4, NULL);
+    inter.improve_grid();
+    inter.integrate();
+    cout << "Result: " << inter.get_result() << " Error: " << inter.get_error() << " chi2: " << inter.get_chisquare() << endl;
     return 0;
 }

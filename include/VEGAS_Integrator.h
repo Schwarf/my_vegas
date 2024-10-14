@@ -19,7 +19,7 @@ enum class VegasVerbosity
     All = 3
 };
 
-class VEGAS_Integrator
+class VegasNumericalIntegration
 {
 private:
     VegasVerbosity verbosity;
@@ -34,24 +34,24 @@ private:
     std::mt19937 random_number_generator; // Mersenne twister random number engine
     std::uniform_real_distribution<double> distribution; // uniform distribution in double in [0.0, 1.0)
 
-    std::vector<double> Results;
-    std::vector<double> Sigma2;
+    std::vector<double> results;
+    std::vector<double> sigma2;
 
 
 public:
-    VEGAS_Integrator(){ verbosity = VegasVerbosity::Info;};
-    ~VEGAS_Integrator() = default;
+    VegasNumericalIntegration(){ verbosity = VegasVerbosity::Info;};
+    ~VegasNumericalIntegration() = default;
 
     void Set_Verbose(VegasVerbosity level);
 
-    void Set_Integrand(VEGAS_INTEGRAND && integrand, int dim, void* param);
-    void Improve_Grid();
-    void Integration(double eps_rel = 1e-3, double eps_abs = 1e-9);
+    void set_integrand(VEGAS_INTEGRAND && integrand, int dim, void* param);
+    void improve_grid();
+    void integrate(double eps_rel = 1e-3, double eps_abs = 1e-9);
     
     
-    double Get_Result();
-    double Get_Error();
-    double Get_Chisq();
+    double get_result();
+    double get_error();
+    double get_chisquare();
 
 };
 

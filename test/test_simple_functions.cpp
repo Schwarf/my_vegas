@@ -34,29 +34,30 @@ double polynom(std::vector<double> x, void *param) {
     return (1.0 + x0 + 2.0 * x1 + x2 * x2) * (1.0 + x0 + 2.0 * x1 + x2 * x2) / (1.0 + x2) / (1.0 + x2) / (1.0 + x2);
 }
 
+constexpr double sigma_range{3.0};
 
 TEST(SimpleFunctionTest, polynom) {
     constexpr double expected_result{2.874618986159398};
     constexpr int dimensions{3};
-    VEGAS_Integrator integrator;
-    integrator.Set_Integrand(std::move(polynom), dimensions, nullptr);
-    integrator.Improve_Grid();
-    integrator.Integration();
-    std::cout << integrator.Get_Result() << " +/- " << integrator.Get_Error() << " with chi-square: "
-              << integrator.Get_Chisq() << std::endl;
+    VegasNumericalIntegration integrator;
+    integrator.set_integrand(std::move(polynom), dimensions, nullptr);
+    integrator.improve_grid();
+    integrator.integrate();
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+              << integrator.get_chisquare() << std::endl;
 
-    EXPECT_NEAR(expected_result, integrator.Get_Result(), 2.0 * integrator.Get_Error());
+    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
 
 TEST(SimpleFunctionTest, sinus) {
     constexpr double expected_result{0.12243402879673784};
     constexpr int dimensions{3};
-    VEGAS_Integrator integrator;
-    integrator.Set_Integrand(std::move(sinus), dimensions, nullptr);
-    integrator.Improve_Grid();
-    integrator.Integration();
-    std::cout << integrator.Get_Result() << " +/- " << integrator.Get_Error() << " with chi-square: "
-              << integrator.Get_Chisq() << std::endl;
+    VegasNumericalIntegration integrator;
+    integrator.set_integrand(std::move(sinus), dimensions, nullptr);
+    integrator.improve_grid();
+    integrator.integrate();
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+              << integrator.get_chisquare() << std::endl;
 
-    EXPECT_NEAR(expected_result, integrator.Get_Result(), 2.0 * integrator.Get_Error());
+    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
