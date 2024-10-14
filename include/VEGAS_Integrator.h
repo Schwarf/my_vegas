@@ -28,7 +28,7 @@ private:
     int dimensions;
     void* userdata;
 
-    VEGAS_Map map;
+    VegasMap map;
     VEGAS_Stratify strat;
 
     std::mt19937 random_number_generator; // Mersenne twister random number engine

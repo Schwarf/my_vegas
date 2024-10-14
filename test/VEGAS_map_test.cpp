@@ -27,25 +27,25 @@ double func_weight(vector<double> x)
 // }
 int main(int argc, char const *argv[])
 {
-    VEGAS_Map GM;
+    VegasMap GM;
     default_random_engine generator;
     uniform_real_distribution<double> distribution(0,1);
     for (int i = 0; i < 50; i++)
     {
         cout<<"=========>"<<endl;
-        // GM.Print_Edges();
+        // GM.print_edges();
         vector<double> y(1);
         vector<double> x(1);
         for (int j = 0; j < 10000; j++)
         {
             y[0] = distribution(generator);
-            x = GM.Get_X(y);
+            x = GM.get_x(y);
             double weight = func_weight(x);
-            GM.Accumulate_Weight(y,weight);
+            GM.accumulate_weight(y, weight);
         }
-        // GM.Print_Weights();
-        GM.Update_Map();
-        GM.Print_Edges();
+        // GM.print_weights();
+        GM.update_map();
+        GM.print_edges();
         cout<<"<========="<<endl;
     }
     

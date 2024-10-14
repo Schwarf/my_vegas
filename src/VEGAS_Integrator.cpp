@@ -16,7 +16,7 @@ void VegasNumericalIntegration::set_integrand(VEGAS_INTEGRAND && integrand, int 
     userdata = param;
     results.clear();
     sigma2.clear();
-    map = VEGAS_Map(dim);
+    map = VegasMap(dim);
     const unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     random_number_generator.seed(seed);
 }
@@ -44,7 +44,7 @@ void VegasNumericalIntegration::improve_grid()
     double acc;
     strat.Set_Dimension(dimensions);
     dV = strat.Get_V_Cubic();
-    map.Set_alpha(alpha_start);
+    map.set_alpha(alpha_start);
     // Warm Up with just MAP improvement
     if (verbosity >= VegasVerbosity::Info)
     {
@@ -65,15 +65,15 @@ void VegasNumericalIntegration::improve_grid()
             {
                 yrnd[i_dim] = distribution(random_number_generator);
             }
-            x = map.Get_X(yrnd);
+            x = map.get_x(yrnd);
             f_eval = function_integrand(x, userdata);
-            Jac = map.Get_Jac(yrnd);
+            Jac = map.get_jacobian(yrnd);
             if (std::isnan(f_eval) || std::isnan(Jac))
             {
                 ne--;
                 continue;
             }
-            map.Accumulate_Weight(yrnd,f_eval);
+            map.accumulate_weight(yrnd, f_eval);
             Jf += f_eval*Jac;
             Jf2 += pow(f_eval*Jac,2);
         }
@@ -81,11 +81,11 @@ void VegasNumericalIntegration::improve_grid()
         Sig2 = Jf2/NEVAL_START - pow(Jf/NEVAL_START,2);
         results[results.size() - 1] += Ih;
         sigma2[sigma2.size() - 1] += Sig2 / NEVAL_START;
-        map.Update_Map();
+        map.update_map();
         acc = sqrt(sigma2[sigma2.size() - 1]) / results[results.size() - 1];
         if (verbosity >= VegasVerbosity::Info)
         {
-            std::cout << "| " << std::setw(6) << warm_iter << " | " << std::setw(12) << NEVAL_START << " | " << std::setw(14) << std::scientific << std::setprecision(5) << results[results.size() - 1] << " | " << std::setw(14) << std::scientific << std::setprecision(5) << sqrt(sigma2[sigma2.size() - 1]) << " | " << resetiosflags(std::ios::scientific) << std::fixed << std::setw(8) << std::setprecision(3) << acc * 100 << "% | " << resetiosflags(std::ios::fixed) << std::setw(12) << std::scientific << std::setprecision(5) << map.Checking_Map() << " |" << std::endl;
+            std::cout << "| " << std::setw(6) << warm_iter << " | " << std::setw(12) << NEVAL_START << " | " << std::setw(14) << std::scientific << std::setprecision(5) << results[results.size() - 1] << " | " << std::setw(14) << std::scientific << std::setprecision(5) << sqrt(sigma2[sigma2.size() - 1]) << " | " << resetiosflags(std::ios::scientific) << std::fixed << std::setw(8) << std::setprecision(3) << acc * 100 << "% | " << resetiosflags(std::ios::fixed) << std::setw(12) << std::scientific << std::setprecision(5) << map.checking_map() << " |" << std::endl;
         }
     }
     Res = get_result();
@@ -128,15 +128,15 @@ void VegasNumericalIntegration::improve_grid()
                     yrnd[i_dim] = distribution(random_number_generator);
                 }
                 y = strat.Get_Y(inc,yrnd);
-                x = map.Get_X(y);
+                x = map.get_x(y);
                 f_eval = function_integrand(x, userdata);
-                Jac = map.Get_Jac(y);
+                Jac = map.get_jacobian(y);
                 if (std::isnan(f_eval) || std::isnan(Jac))
                 {
                     ne--;
                     continue;
                 }
-                map.Accumulate_Weight(y,f_eval);
+                map.accumulate_weight(y, f_eval);
                 strat.Accumulate_Weight(inc,f_eval*Jac);
                 Jf += f_eval*Jac;
                 Jf2 += pow(f_eval*Jac,2);
@@ -150,9 +150,9 @@ void VegasNumericalIntegration::improve_grid()
         {
             // if (alpha > 0.05)
             // {
-                map.Update_Map();
+            map.update_map();
                 // alpha = alpha_start*exp(-iter/5.0);
-                // map.Set_alpha(alpha);
+                // map.set_alpha(alpha);
             // }
         }
         else
@@ -162,7 +162,7 @@ void VegasNumericalIntegration::improve_grid()
         acc = sqrt(sigma2[sigma2.size() - 1]) / results[results.size() - 1];
         if (verbosity >= VegasVerbosity::Info)
         {
-            std::cout << "| " << std::setw(6) << iter << " | " << std::setw(12) << NEVAL_REAL << " | " << std::setw(14) << std::scientific << std::setprecision(5) << results[results.size() - 1] << " | " << std::setw(14) << std::scientific << std::setprecision(5) << sqrt(sigma2[sigma2.size() - 1]) << " | " << resetiosflags(std::ios::scientific) << std::fixed << std::setw(8) << std::setprecision(3) << acc * 100 << "% | " << resetiosflags(std::ios::fixed) << std::setw(12) << std::scientific << std::setprecision(5) << map.Checking_Map() << " |" << std::endl;
+            std::cout << "| " << std::setw(6) << iter << " | " << std::setw(12) << NEVAL_REAL << " | " << std::setw(14) << std::scientific << std::setprecision(5) << results[results.size() - 1] << " | " << std::setw(14) << std::scientific << std::setprecision(5) << sqrt(sigma2[sigma2.size() - 1]) << " | " << resetiosflags(std::ios::scientific) << std::fixed << std::setw(8) << std::setprecision(3) << acc * 100 << "% | " << resetiosflags(std::ios::fixed) << std::setw(12) << std::scientific << std::setprecision(5) << map.checking_map() << " |" << std::endl;
         }
         if (iter % 5 == 0)
         {
@@ -236,9 +236,9 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
                     yrnd[i_dim] = distribution(random_number_generator);
                 }
                 y = strat.Get_Y(inc,yrnd);
-                x = map.Get_X(y);
+                x = map.get_x(y);
                 f_eval = function_integrand(x, userdata);
-                Jac = map.Get_Jac(y);
+                Jac = map.get_jacobian(y);
                 if (std::isnan(f_eval) || std::isnan(Jac))
                 {
                     ne--;
