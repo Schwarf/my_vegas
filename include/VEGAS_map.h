@@ -36,10 +36,13 @@ private:
     void check_weight();
     std::vector<double> average_weight; // size = dimensions
     std::vector<double> std_weight; // size = dimensions
+    std::vector<int> get_interval_ID(const std::vector<double> & y) const;
+    std::vector<double> get_interval_offset(const std::vector<double> & y) const;
+
 
 public:
     VegasMap();
-    explicit VegasMap(int NDIM);
+    explicit VegasMap(int dimensions);
     VegasMap(int NDIM, int Intervals);
     ~VegasMap(){};
 
@@ -49,12 +52,10 @@ public:
     void update_map();
 
     int Get_N_Interval() const {return number_of_intervals;}
-    std::vector<int> get_interval_ID(const std::vector<double> & y);
-    std::vector<double> get_interval_offset(const std::vector<double> & y);
 
-    std::vector<double> get_x(const std::vector<double> &y);
+    std::vector<double> get_x(const std::vector<double> &y) const;
     double get_jacobian(const std::vector<double> &y);
-
+    
     // void Dump_Edges(std::string filename);
     void print_edges();
     void print_weights();
