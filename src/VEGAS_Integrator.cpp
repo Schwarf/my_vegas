@@ -30,7 +30,7 @@ void VegasNumericalIntegration::improve_grid()
     double Jac;
     int iter = 0;
     int NEVAL_START = 10000;
-    double alpha_start = 0.5;
+    constexpr double alpha_start{0.5};
     double alpha = alpha_start;
     double dV;
     double Res;
@@ -59,7 +59,7 @@ void VegasNumericalIntegration::improve_grid()
         sigma2.push_back(0);
         Jf = 0;
         Jf2 = 0;
-        for (int ne = 0; ne < NEVAL_START; ne++)
+        for (int evaluation = 0; evaluation < NEVAL_START; evaluation++)
         {
             for (int i_dim = 0; i_dim < dimensions; i_dim++)
             {
@@ -70,15 +70,15 @@ void VegasNumericalIntegration::improve_grid()
             Jac = map.get_jacobian(yrnd);
             if (std::isnan(f_eval) || std::isnan(Jac))
             {
-                ne--;
+                evaluation--;
                 continue;
             }
             map.accumulate_weight(yrnd, f_eval);
             Jf += f_eval*Jac;
-            Jf2 += pow(f_eval*Jac,2);
+            Jf2 += (f_eval * Jac) * (f_eval * Jac);
         }
         Ih = Jf/NEVAL_START;
-        Sig2 = Jf2/NEVAL_START - pow(Jf/NEVAL_START,2);
+        Sig2 = Jf2/NEVAL_START - Ih*Ih;
         results[results.size() - 1] += Ih;
         sigma2[sigma2.size() - 1] += Sig2 / NEVAL_START;
         map.update_map();
@@ -139,10 +139,10 @@ void VegasNumericalIntegration::improve_grid()
                 map.accumulate_weight(y, f_eval);
                 strat.Accumulate_Weight(inc,f_eval*Jac);
                 Jf += f_eval*Jac;
-                Jf2 += pow(f_eval*Jac,2);
+                Jf2 += (f_eval*Jac) * (f_eval*Jac);
             }
             Ih = Jf/neval*dV;
-            Sig2 = Jf2/neval*dV*dV - pow(Jf/neval*dV,2);
+            Sig2 = Jf2/neval*dV*dV - Ih*Ih;
             results[results.size() - 1] += Ih;
             sigma2[sigma2.size() - 1] += Sig2 / neval;
         }
@@ -194,16 +194,16 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
     std::vector<double> yrnd(dimensions);
     std::vector<double> y(dimensions); // Random number between 0 to 1;
     std::vector<double> x(dimensions); // The argument for integrand;
-    double f_eval; // evaluated integrand value;
-    double Jac; // The Jacobian from y to x;
-    int NEVAL_START = 50000;
+    double f_eval{}; // evaluated integrand value;
+    double Jac{}; // The Jacobian from y to x;
+    int starting_number_of_evaluations{50000};
     double dV = strat.Get_V_Cubic();
-    int iter = 0;
-    double Res;
-    double Err;
-    double Chi2;
-    int neval;
-    int NEVAL_REAL;
+    int number_of_iterations{};
+    double result{};
+    double error{};
+    double chi_squared{};
+    int number_of_evaluations{};
+    int number_of_real_evaluations{};
     double Jf;
     double Jf2;
     double Ih;
@@ -218,22 +218,21 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
     }
     while (true)
     {
-        iter++;
-        strat.Set_NEVAL(NEVAL_START);
+        number_of_iterations++;
+        strat.Set_NEVAL(starting_number_of_evaluations);
         results.push_back(0);
         sigma2.push_back(0);
-        NEVAL_REAL = 0;
         for (int inc = 0; inc < strat.Get_NHYPERCUBICS(); inc++)
         {
             Jf = 0;
             Jf2 = 0;
-            neval = strat.Get_NH(inc);
-            NEVAL_REAL += neval;
-            for (int ne = 0; ne < neval; ne++)
+            number_of_evaluations = strat.Get_NH(inc);
+            number_of_real_evaluations += number_of_evaluations;
+            for (int evaluation{}; evaluation < number_of_evaluations; evaluation++)
             {
-                for (int i_dim = 0; i_dim < dimensions; i_dim++)
+                for (int dimension_index = 0; dimension_index < dimensions; dimension_index++)
                 {
-                    yrnd[i_dim] = distribution(random_number_generator);
+                    yrnd[dimension_index] = distribution(random_number_generator);
                 }
                 y = strat.Get_Y(inc,yrnd);
                 x = map.get_x(y);
@@ -241,49 +240,49 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
                 Jac = map.get_jacobian(y);
                 if (std::isnan(f_eval) || std::isnan(Jac))
                 {
-                    ne--;
+                    evaluation--;
                     continue;
                 }
                 strat.Accumulate_Weight(inc,f_eval*Jac);
                 Jf += f_eval*Jac;
-                Jf2 += pow(f_eval*Jac,2);
+                Jf2 += (f_eval*Jac)*(f_eval*Jac);
             }
-            Ih = Jf/neval*dV;
-            Sig2 = Jf2/neval*dV*dV - pow(Jf/neval*dV,2);
+            Ih = Jf / number_of_evaluations * dV;
+            Sig2 = Jf2 / number_of_evaluations * dV * dV - Ih*Ih;
             results[results.size() - 1] += Ih;
-            sigma2[sigma2.size() - 1] += Sig2 / neval;
+            sigma2[sigma2.size() - 1] += Sig2 / number_of_evaluations;
         }
         strat.Update_DH();
         acc = sqrt(sigma2[sigma2.size() - 1]) / results[results.size() - 1];
         if (verbosity >= VegasVerbosity::Info)
         {
-            std::cout << "| " << std::setw(6) << iter << " | " << std::setw(12) << NEVAL_REAL << " | " << std::setw(14) << std::scientific << std::setprecision(5) << results[results.size() - 1] << " | " << std::setw(14) << std::scientific << std::setprecision(5) << sqrt(sigma2[sigma2.size() - 1]) << " | " << resetiosflags(std::ios::scientific) << std::fixed << std::setw(8) << std::setprecision(3) << acc * 100 << "% |" << std::endl;
+            std::cout << "| " << std::setw(6) << number_of_iterations << " | " << std::setw(12) << number_of_real_evaluations << " | " << std::setw(14) << std::scientific << std::setprecision(5) << results[results.size() - 1] << " | " << std::setw(14) << std::scientific << std::setprecision(5) << sqrt(sigma2[sigma2.size() - 1]) << " | " << resetiosflags(std::ios::scientific) << std::fixed << std::setw(8) << std::setprecision(3) << acc * 100 << "% |" << std::endl;
         }
-        if (iter%5==0)
+        if (number_of_iterations % 5 == 0)
         {
             // Every 5 iteration, we check whether we fullfil the condition
-            Res = get_result();
-            Err = get_error();
-            Chi2 = get_chisquare();
-            acc = Err/Res;
+            result = get_result();
+            error = get_error();
+            chi_squared = get_chisquare();
+            acc = error / result;
             if (verbosity >= VegasVerbosity::Info)
             {
-                std::cout<<"| Summary of Last 5 Iter: "<<std::setw(14)<<std::scientific<<std::setprecision(5)<< Res <<" | "<<std::setw(14)<<std::scientific<<std::setprecision(5)<< Err <<" | "<<resetiosflags(std::ios::scientific)<<std::fixed<<std::setw(8)<<std::setprecision(3)<<acc*100<<"% | Chi2 = "<<Chi2<<std::endl;
+                std::cout << "| Summary of Last 5 Iter: " << std::setw(14) << std::scientific << std::setprecision(5) << result << " | " << std::setw(14) << std::scientific << std::setprecision(5) << error << " | " << resetiosflags(std::ios::scientific) << std::fixed << std::setw(8) << std::setprecision(3) << acc * 100 << "% | chi_squared = " << chi_squared << std::endl;
             }
-            if ( (acc < eps_rel || Err < eps_abs) && Chi2/5.0 < 1.0 )
+            if ((acc < eps_rel || error < eps_abs) && chi_squared / 5.0 < 1.0 )
             {
                 break;
             }
-            if (Chi2/5.0 < 1.0)
+            if (chi_squared / 5.0 < 1.0)
             {
-                NEVAL_START = NEVAL_START * sqrt(acc/eps_rel);
+                starting_number_of_evaluations = starting_number_of_evaluations * sqrt(acc / eps_rel);
                 results.clear();
                 sigma2.clear();
                 continue;
             }
-            if (Chi2/5.0 > 1.0)
+            if (chi_squared / 5.0 > 1.0)
             {
-                NEVAL_START += 5000;
+                starting_number_of_evaluations += 5000;
                 results.clear();
                 sigma2.clear();
                 continue;
@@ -292,13 +291,13 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
     }
     if (verbosity >= VegasVerbosity::Info)
     {
-        Res = get_result();
-        Err = get_error();
-        Chi2 = get_chisquare();
-        acc = Err/Res;
+        result = get_result();
+        error = get_error();
+        chi_squared = get_chisquare();
+        acc = error / result;
         std::cout<<"======================================================================="<<std::endl;
         std::cout<<"Summary: "<<std::endl;
-        std::cout<<"Result: "<<std::setw(12)<<std::scientific<<std::setprecision(5)<<Res<<"  Error: "<<std::setw(12)<<std::scientific<<std::setprecision(5)<<Err<<"  Acc: "<<resetiosflags(std::ios::scientific)<<std::fixed<<std::setw(6)<<std::setprecision(3)<<acc*100<<"%  Chi2: "<<Chi2<<std::endl;
+        std::cout << "Result: " << std::setw(12) << std::scientific << std::setprecision(5) << result << "  Error: " << std::setw(12) << std::scientific << std::setprecision(5) << error << "  Acc: " << resetiosflags(std::ios::scientific) << std::fixed << std::setw(6) << std::setprecision(3) << acc * 100 << "%  chi_squared: " << chi_squared << std::endl;
         std::cout<<"======================================================================="<<std::endl;
         std::cout<<resetiosflags(std::ios::fixed)<<std::setprecision(8);
     }
@@ -329,7 +328,7 @@ double VegasNumericalIntegration::get_chisquare()
     double chi2 = 0;
     for (int i = 0; i < results.size(); i++)
     {
-        chi2 += pow(results[i] - Ifinal, 2) / sigma2[i];
+        chi2 += (results[i] - Ifinal)*(results[i] - Ifinal) / sigma2[i];
     }
     return chi2;
 }
