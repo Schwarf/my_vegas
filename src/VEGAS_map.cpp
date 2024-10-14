@@ -101,7 +101,7 @@ void VegasMap::accumulate_weight(const std::vector<double> &y, double f) {
     auto ID = get_interval_ID(y);
     for (int i = 0; i < number_of_dimensions; i++) {
         int id = ID[i];
-        weights[i][id] += pow(f * get_jacobian(y), 2);
+        weights[i][id] += (f * get_jacobian(y))*(f * get_jacobian(y));
         counts[i][id] += 1;
         // std::cout<<"ID: "<<id<<" weight: "<<weights[i][id]<<" counts: "<<counts[i][id]<<std::endl;
     }
@@ -191,7 +191,7 @@ void VegasMap::check_weight() {
         }
         average_weight[i_dim] /= static_cast<double>(weights[i_dim].size());
         for (int i = 0; i < weights[i_dim].size(); i++) {
-            std_weight[i_dim] += pow(weights[i_dim][i] - average_weight[i_dim], 2);
+            std_weight[i_dim] += (weights[i_dim][i] - average_weight[i_dim])*(weights[i_dim][i] - average_weight[i_dim]);
         }
         std_weight[i_dim] = sqrt(std_weight[i_dim]);// /average_weight;
     }
@@ -232,7 +232,7 @@ double VegasMap::checking_map() {
     double chi2{};
     for (int idim = 0; idim < number_of_dimensions; idim++) {
         for (int i = 0; i < number_of_edges; i++) {
-            chi2 += pow(x_edges[idim][i] - x_edges_last[idim][i], 2) / pow(dx_ave, 2);
+            chi2 += (x_edges[idim][i] - x_edges_last[idim][i])*(x_edges[idim][i] - x_edges_last[idim][i]) / dx_ave/ dx_ave;
         }
     }
     return chi2 / number_of_dimensions / number_of_edges;
