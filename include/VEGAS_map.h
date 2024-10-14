@@ -56,7 +56,6 @@ public:
     std::vector<double> get_x(const std::vector<double> &y) const;
     double get_jacobian(const std::vector<double> &y);
     
-    // void Dump_Edges(std::string filename);
     void print_edges();
     void print_weights();
 

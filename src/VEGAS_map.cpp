@@ -106,67 +106,50 @@ void VegasMap::accumulate_weight(const std::vector<double> &y, double f) {
         // std::cout<<"ID: "<<id<<" weight: "<<weights[i][id]<<" counts: "<<counts[i][id]<<std::endl;
     }
 }
-void VegasMap::smooth_weight()
-{
+void VegasMap::smooth_weight() {
     // std::cout<<"Smoothing weight"<<std::endl;
-    for (int i_dim = 0; i_dim < number_of_dimensions; i_dim++)
-    {
-        for (int i_inter = 0; i_inter < weights[i_dim].size(); i_inter++)
-        {
-            if (counts[i_dim][i_inter]!=0)
-            {
+    for (int i_dim = 0; i_dim < number_of_dimensions; i_dim++) {
+        for (int i_inter = 0; i_inter < weights[i_dim].size(); i_inter++) {
+            if (counts[i_dim][i_inter] != 0) {
                 weights[i_dim][i_inter] /= counts[i_dim][i_inter];
             }
         }
     }
     // std::cout<<"Count devided!"<<std::endl;
-    for (int i_dim = 0; i_dim < number_of_dimensions; i_dim++)
-    {
+    for (int i_dim = 0; i_dim < number_of_dimensions; i_dim++) {
         double d_tmp;
-        double d_sum = accumulate(weights[i_dim].begin(),weights[i_dim].end(),0.0);
+        double d_sum = std::accumulate(weights[i_dim].begin(), weights[i_dim].end(), 0.0);
         summed_weights[i_dim] = 0;
-        for (int i = 0; i < number_of_intervals; i++)
-        {
-            if (i==0)
-            {
-                d_tmp = (7.0*weights[i_dim][0]+weights[i_dim][1])/(8.0*d_sum);
-                if (d_tmp == 0)
-                {
-                    d_tmp = 0;
-                }
-                else
-                {
-                    d_tmp = pow((d_tmp-1.0)/log(d_tmp),alpha);
-                }
+
+        // Handle the first interval (i == 0) outside the loop
+        d_tmp = (7.0 * weights[i_dim][0] + weights[i_dim][1]) / (8.0 * d_sum);
+        if (d_tmp != 0.0) {
+            d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha);
+        }
+        smoothed_weights[i_dim][0] = d_tmp;
+        summed_weights[i_dim] += d_tmp;
+
+        // Handle the main loop (1 <= i < number_of_intervals - 1)
+        for (int i = 1; i < number_of_intervals - 1; i++) {
+            d_tmp = (weights[i_dim][i - 1] + 6.0 * weights[i_dim][i] + weights[i_dim][i + 1]) / (8.0 * d_sum);
+            if (d_tmp != 0.0) {
+                d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha);
             }
-            else if (i == number_of_intervals - 1)
-            {
-                d_tmp = (weights[i_dim][number_of_intervals - 2] + 7.0 * weights[i_dim][number_of_intervals - 1]) / (8.0 * d_sum);
-                if (d_tmp == 0)
-                {
-                    d_tmp = 0;
-                }
-                else
-                {
-                    d_tmp = pow((d_tmp-1.0)/log(d_tmp),alpha);
-                }
-            }
-            else
-            {
-                d_tmp = (weights[i_dim][i-1] + 6.0*weights[i_dim][i] + weights[i_dim][i+1])/(8.0*d_sum);
-                if (d_tmp == 0)
-                {
-                    d_tmp = 0;
-                }
-                else
-                {
-                    d_tmp = pow((d_tmp-1.0)/log(d_tmp),alpha);
-                }
-            }
-            smoothed_weights[i_dim][i]=d_tmp;
+            smoothed_weights[i_dim][i] = d_tmp;
             summed_weights[i_dim] += d_tmp;
         }
+        // Handle the last interval (i == number_of_intervals - 1) outside the loop
+        d_tmp = (weights[i_dim][number_of_intervals - 2] + 7.0 * weights[i_dim][number_of_intervals - 1]) /
+                (8.0 * d_sum);
+        if (d_tmp != 0.0) {
+            d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha);
+        }
+
+        smoothed_weights[i_dim][number_of_intervals - 1] = d_tmp;
+        summed_weights[i_dim] += d_tmp;
+
         delta_weights[i_dim] = summed_weights[i_dim] / number_of_intervals;
+
     }
 }
 
