@@ -155,12 +155,11 @@ void VegasMap::smooth_weight() {
 
 void VegasMap::update_map() {
     smooth_weight();
-    // std::cout<<"Updating the map"<<std::endl;
     x_edges_last = x_edges;
     dx_steps_last = dx_steps;
     for (int i_dim = 0; i_dim < number_of_dimensions; i_dim++) {
-        int current_old_interval = 0;
-        int current_new_interval = 1;
+        int current_old_interval{};
+        int current_new_interval{1};
         double d_accu = 0;
         while (true) {
             d_accu += delta_weights[i_dim];
@@ -230,7 +229,7 @@ void VegasMap::print_weights() {
 
 double VegasMap::checking_map() {
     double dx_ave = 1.0 / number_of_intervals;
-    double chi2 = 0;
+    double chi2{};
     for (int idim = 0; idim < number_of_dimensions; idim++) {
         for (int i = 0; i < number_of_edges; i++) {
             chi2 += pow(x_edges[idim][i] - x_edges_last[idim][i], 2) / pow(dx_ave, 2);
