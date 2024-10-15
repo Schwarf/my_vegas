@@ -19,7 +19,6 @@ double sin_cos_tan(std::vector<double> x, void *param) {
 }
 
 double sinus(std::vector<double> x, void *param) {
-    constexpr auto pi = std::numbers::pi;
     auto x0 = x[0];
     auto x1 = x[1];
     auto x2 = x[2];
@@ -28,7 +27,6 @@ double sinus(std::vector<double> x, void *param) {
 }
 
 double polynom(std::vector<double> x, void *param) {
-    constexpr auto pi = std::numbers::pi;
     auto x0 = x[0];
     auto x1 = x[1];
     auto x2 = x[2];

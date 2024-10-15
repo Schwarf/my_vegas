@@ -14,7 +14,7 @@
 template<int NumberOfDimensions, int NumberOfIntervals = 1000>
 class VegasMap {
 private:
-    int number_of_edges; // number_of_intervals + 1;
+//    int number_of_edges; // number_of_intervals + 1;
     double alpha; // The parameter control the smooth of weight
 
     std::vector<std::vector<double> > x_edges; // The edges in x, size = number_of_dimensions x number_of_edges;
