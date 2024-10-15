@@ -7,6 +7,8 @@
 #include <cmath>
 #include <numbers>
 
+constexpr double sigma_range{3.0};
+
 double sin_cos_tan(std::vector<double> x, void *param) {
     constexpr auto pi = std::numbers::pi;
     auto x0 = x[0] * pi;
@@ -34,7 +36,30 @@ double polynom(std::vector<double> x, void *param) {
     return (1.0 + x0 + 2.0 * x1 + x2 * x2) * (1.0 + x0 + 2.0 * x1 + x2 * x2) / (1.0 + x2) / (1.0 + x2) / (1.0 + x2);
 }
 
-constexpr double sigma_range{3.0};
+double polynom2(std::vector<double> x, void *param) {
+    constexpr auto pi = std::numbers::pi;
+    auto x0 = x[0];
+    auto x1 = x[1];
+    auto x2 = x[2];
+    auto x3 = x[3];
+    auto x4 = x[4];
+    return x3 * x4 * (1.0 + x0 + 2.0 * x1 + x2 * x2) * (1.0 + x0 + 2.0 * x1 + x2 * x2) / (1.0 + x2) / (1.0 + x2) /
+           (1.0 + x2);
+}
+
+TEST(SimpleFunctionTest, polynom2) {
+    constexpr double expected_result{1.424132738439827};
+    constexpr int dimensions{5};
+    VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_integrand(std::move(polynom2), nullptr);
+    integrator.improve_grid();
+    integrator.integrate();
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+              << integrator.get_chisquare() << std::endl;
+
+    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
+}
+
 
 TEST(SimpleFunctionTest, polynom) {
     constexpr double expected_result{2.874618986159398};
