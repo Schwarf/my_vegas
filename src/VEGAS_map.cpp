@@ -75,9 +75,9 @@ std::vector<double> VegasMap::get_interval_offset(const std::vector<double> &y) 
     return res; // Profiling spot compare with move semantics
 }
 
-std::vector<double> VegasMap::get_x(const std::vector<double> &y) const {
-    auto ID = get_interval_ID(y);
-    auto offset = get_interval_offset(y);
+std::vector<double> VegasMap::get_x(const std::vector<double> &random_numbers) const {
+    auto ID = get_interval_ID(random_numbers);
+    auto offset = get_interval_offset(random_numbers);
     std::vector<double> res(number_of_dimensions);
     for (int i = 0; i < number_of_dimensions; i++) {
         int id = ID[i];
@@ -86,8 +86,8 @@ std::vector<double> VegasMap::get_x(const std::vector<double> &y) const {
     return res; // Profiling spot compare with move semantics
 }
 
-double VegasMap::get_jacobian(const std::vector<double> &y) {
-    auto ID = get_interval_ID(y);
+double VegasMap::get_jacobian(const std::vector<double> &random_numbers) {
+    auto ID = get_interval_ID(random_numbers);
     double jacobian{1.0};
     for (int i = 0; i < number_of_dimensions; i++) {
         int id = ID[i];

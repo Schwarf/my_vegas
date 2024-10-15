@@ -53,8 +53,8 @@ public:
 
     int Get_N_Interval() const {return number_of_intervals;}
 
-    std::vector<double> get_x(const std::vector<double> &y) const;
-    double get_jacobian(const std::vector<double> &y);
+    std::vector<double> get_x(const std::vector<double> &random_numbers) const;
+    double get_jacobian(const std::vector<double> &random_numbers);
 
     void print_edges();
     void print_weights();

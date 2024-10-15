@@ -23,7 +23,7 @@ void VegasNumericalIntegration::set_integrand(VEGAS_INTEGRAND && integrand, int 
 
 void VegasNumericalIntegration::improve_grid()
 {
-    std::vector<double> yrnd(dimensions);
+    std::vector<double> random_numbers(dimensions);
     std::vector<double> y(dimensions); // Random number between 0 to 1;
     std::vector<double> x(dimensions); // The argument for integrand;
     double f_eval; // evaluated integrand value;
@@ -63,17 +63,17 @@ void VegasNumericalIntegration::improve_grid()
         {
             for (int i_dim = 0; i_dim < dimensions; i_dim++)
             {
-                yrnd[i_dim] = distribution(random_number_generator);
+                random_numbers[i_dim] = distribution(random_number_generator);
             }
-            x = map.get_x(yrnd);
+            x = map.get_x(random_numbers);
             f_eval = function_integrand(x, userdata);
-            Jac = map.get_jacobian(yrnd);
+            Jac = map.get_jacobian(random_numbers);
             if (std::isnan(f_eval) || std::isnan(Jac))
             {
                 evaluation--;
                 continue;
             }
-            map.accumulate_weight(yrnd, f_eval);
+            map.accumulate_weight(random_numbers, f_eval);
             Jf += f_eval*Jac;
             Jf2 += (f_eval * Jac) * (f_eval * Jac);
         }
@@ -125,9 +125,9 @@ void VegasNumericalIntegration::improve_grid()
             {
                 for (int i_dim = 0; i_dim < dimensions; i_dim++)
                 {
-                    yrnd[i_dim] = distribution(random_number_generator);
+                    random_numbers[i_dim] = distribution(random_number_generator);
                 }
-                y = strat.Get_Y(inc,yrnd);
+                y = strat.Get_Y(inc, random_numbers);
                 x = map.get_x(y);
                 f_eval = function_integrand(x, userdata);
                 Jac = map.get_jacobian(y);
