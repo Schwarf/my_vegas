@@ -30,7 +30,7 @@ private:
     std::vector<double> summed_weights; // The all summed smoothed weights, size = number_of_dimensions
     std::vector<double> delta_weights; // The step for weights, size = number_of_dimensions
 
-    void smooth_weight();
+    void smooth_weights();
 
     void reset_weights();
 
@@ -51,7 +51,7 @@ public:
 
     void set_alpha(double alp) { alpha = alp; };
 
-    void accumulate_weight(double evaluated_integrand); // evaluated_integrand is the integrand, no other manupulation
+    void accumulate_weights(double evaluated_integrand); // evaluated_integrand is the integrand, no other manupulation
     void update_map();
 
     constexpr int Get_N_Interval() const { return NumberOfIntervals; }

@@ -80,7 +80,7 @@ double VegasMap<NumberOfDimensions, NumberOfIntervals>::get_jacobian() {
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
-void VegasMap<NumberOfDimensions, NumberOfIntervals>::accumulate_weight(double evaluated_integrand) {
+void VegasMap<NumberOfDimensions, NumberOfIntervals>::accumulate_weights(double evaluated_integrand) {
     const auto jacobian = get_jacobian();
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         int id = ID[dimension];
@@ -90,7 +90,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::accumulate_weight(double e
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
-void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weight() {
+void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weights() {
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         for (int interval{}; interval < NumberOfIntervals; ++interval) {
             if (counts[dimension][interval] != 0) {
@@ -138,7 +138,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weight() {
 
 template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::update_map() {
-    smooth_weight();
+    smooth_weights();
     x_edges_last = x_edges;
     dx_steps_last = dx_steps;
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {

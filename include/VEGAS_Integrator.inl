@@ -60,8 +60,8 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
         Jf = 0;
         Jf2 = 0;
         for (int evaluation{}; evaluation < starting_number_of_evaluations; ++evaluation) {
-            for (int dimension_index{}; dimension_index < NumberOfDimensions; ++dimension_index) {
-                random_numbers[dimension_index] = distribution(random_number_generator);
+            for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
+                random_numbers[dimension] = distribution(random_number_generator);
             }
             x = map.get_x(random_numbers);
             evaluated_integrand_value = function_integrand(x, integrand_parameters);
@@ -70,7 +70,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
                 evaluation--;
                 continue;
             }
-            map.accumulate_weight(evaluated_integrand_value);
+            map.accumulate_weights(evaluated_integrand_value);
             Jf += evaluated_integrand_value * jacobian;
             Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
         }
@@ -122,8 +122,8 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
         sigma2.push_back(0);
         NEVAL_REAL = 0;
         for (int cube_index = 0; cube_index < strat.Get_NHYPERCUBICS(); cube_index++) {
-            Jf = 0;
-            Jf2 = 0;
+            Jf = 0.0;
+            Jf2 = 0.0;
             number_of_evaluations = strat.get_expected_events_per_hyper_cube(cube_index);
             NEVAL_REAL += number_of_evaluations;
             for (int evaluation{}; evaluation < number_of_evaluations; ++evaluation) {
@@ -138,7 +138,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
                     evaluation--;
                     continue;
                 }
-                map.accumulate_weight(evaluated_integrand_value);
+                map.accumulate_weights(evaluated_integrand_value);
                 strat.accumulate_weights(cube_index, evaluated_integrand_value * jacobian);
                 Jf += evaluated_integrand_value * jacobian;
                 Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
@@ -225,16 +225,16 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
         strat.Set_NEVAL(starting_number_of_evaluations);
         results.push_back(0);
         sigma2.push_back(0);
-        for (int inc = 0; inc < strat.Get_NHYPERCUBICS(); inc++) {
+        for (int cube_index = 0; cube_index < strat.Get_NHYPERCUBICS(); cube_index++) {
             Jf = 0.0;
             Jf2 = 0.0;
-            number_of_evaluations = strat.get_expected_events_per_hyper_cube(inc);
+            number_of_evaluations = strat.get_expected_events_per_hyper_cube(cube_index);
             number_of_real_evaluations += number_of_evaluations;
             for (int evaluation{}; evaluation < number_of_evaluations; evaluation++) {
                 for (int dimension_index = 0; dimension_index < NumberOfDimensions; dimension_index++) {
                     random_numbers[dimension_index] = distribution(random_number_generator);
                 }
-                y = strat.get_y(inc, random_numbers);
+                y = strat.get_y(cube_index, random_numbers);
                 x = map.get_x(y);
                 evaluated_integrand_value = function_integrand(x, integrand_parameters);
                 jacobian = map.get_jacobian();
@@ -242,7 +242,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
                     evaluation--;
                     continue;
                 }
-                strat.accumulate_weights(inc, evaluated_integrand_value * jacobian);
+                strat.accumulate_weights(cube_index, evaluated_integrand_value * jacobian);
                 Jf += evaluated_integrand_value * jacobian;
                 Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
             }
