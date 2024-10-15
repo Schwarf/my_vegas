@@ -15,16 +15,16 @@ void VEGAS_Stratify::Set_NEVAL(int NEVAL_EXP)
 }
 // void VEGAS_Stratify::Set_Stratification_System(int ndim, int NEVAL_TRAIN)
 // {
-//     dimensions = ndim;
+//     number_of_dimensions = ndim;
 //     N_EVALUATES_TRAINED = NEVAL_TRAIN;
 //     Reset_Storage();
 // }
 void VEGAS_Stratify::Reset_Storage()
 {
-    // N_STRAT = floor(pow(N_EVALUATES_TRAINED/4.0,1.0/dimensions));
+    // N_STRAT = floor(pow(N_EVALUATES_TRAINED/4.0,1.0/number_of_dimensions));
     
     N_HYPERCUBICS = pow(N_STRAT,N_DIM);
-    if (N_HYPERCUBICS > N_HYPERCUBICS_MAX || N_DIM > 9) // if dimensions too large, N_HYPERCUBICS will exceed the MAXIMUM number an integer can store
+    if (N_HYPERCUBICS > N_HYPERCUBICS_MAX || N_DIM > 9) // if number_of_dimensions too large, N_HYPERCUBICS will exceed the MAXIMUM number an integer can store
     {
         N_STRAT = floor(pow(N_HYPERCUBICS_MAX,1.0/N_DIM));
         N_HYPERCUBICS = pow(N_STRAT,N_DIM);

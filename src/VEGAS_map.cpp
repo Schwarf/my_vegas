@@ -8,6 +8,7 @@ VegasMap::VegasMap() {
     number_of_dimensions = 1;
     number_of_intervals = 1000;
     number_of_edges = number_of_intervals + 1;
+    ID = std::vector<int>(number_of_dimensions);
     alpha = 0.5;
     reset_map();
     reset_map();
@@ -17,6 +18,7 @@ VegasMap::VegasMap(int dimensions) {
     number_of_dimensions = dimensions;
     number_of_intervals = 1000;
     number_of_edges = number_of_intervals + 1;
+    ID = std::vector<int>(number_of_dimensions);
     alpha = 0.5;
     reset_map();
 }
@@ -25,6 +27,7 @@ VegasMap::VegasMap(int NDIM, int Intervals) {
     number_of_dimensions = NDIM;
     number_of_intervals = Intervals;
     number_of_edges = number_of_intervals + 1;
+    ID = std::vector<int>(number_of_dimensions);
     alpha = 0.5;
     reset_map();
 }
@@ -58,25 +61,25 @@ void VegasMap::reset_weight() {
     counts = std::vector<std::vector<double> >(number_of_dimensions, std::vector<double>(number_of_intervals, 0));
 }
 
-std::vector<int> VegasMap::get_interval_ID(const std::vector<double> &y) const {
-    std::vector<int> result(number_of_dimensions);
+void VegasMap::compute_interval_ID(const std::vector<double> &random_numbers)  {
+
     for (int i = 0; i < number_of_dimensions; i++) {
-        result[i] = std::floor(y[i] * number_of_intervals);
+        ID[i] = std::floor(random_numbers[i] * number_of_intervals);
     }
-    return result; // Profiling spot compare with move semantics
 }
 
-std::vector<double> VegasMap::get_interval_offset(const std::vector<double> &y) const {
-    auto ID = get_interval_ID(y);
+std::vector<double> VegasMap::get_interval_offset(const std::vector<double> &random_numbers) const {
+//    auto ID = compute_interval_ID(random_numbers);
     std::vector<double> res(number_of_dimensions);
     for (int i = 0; i < number_of_dimensions; i++) {
-        res[i] = y[i] * number_of_intervals - ID[i];
+        res[i] = random_numbers[i] * number_of_intervals - ID[i];
     }
     return res; // Profiling spot compare with move semantics
 }
 
-std::vector<double> VegasMap::get_x(const std::vector<double> &random_numbers) const {
-    auto ID = get_interval_ID(random_numbers);
+std::vector<double> VegasMap::get_x(const std::vector<double> &random_numbers) {
+//    auto ID = compute_interval_ID(random_numbers);
+    compute_interval_ID(random_numbers);
     auto offset = get_interval_offset(random_numbers);
     std::vector<double> res(number_of_dimensions);
     for (int i = 0; i < number_of_dimensions; i++) {
@@ -87,7 +90,7 @@ std::vector<double> VegasMap::get_x(const std::vector<double> &random_numbers) c
 }
 
 double VegasMap::get_jacobian(const std::vector<double> &random_numbers) {
-    auto ID = get_interval_ID(random_numbers);
+//    auto ID = compute_interval_ID(random_numbers);
     double jacobian{1.0};
     for (int i = 0; i < number_of_dimensions; i++) {
         int id = ID[i];
@@ -98,7 +101,7 @@ double VegasMap::get_jacobian(const std::vector<double> &random_numbers) {
 
 void VegasMap::accumulate_weight(const std::vector<double> &y, double f) {
     // f is the value of integrand!
-    auto ID = get_interval_ID(y);
+//    auto ID = compute_interval_ID(y);
     for (int i = 0; i < number_of_dimensions; i++) {
         int id = ID[i];
         weights[i][id] += (f * get_jacobian(y))*(f * get_jacobian(y));

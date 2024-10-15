@@ -25,7 +25,7 @@ private:
     VegasVerbosity verbosity;
 
     VEGAS_INTEGRAND function_integrand;
-    int dimensions;
+    int number_of_dimensions;
     void* userdata;
 
     VegasMap map;
@@ -44,7 +44,7 @@ public:
 
     void Set_Verbose(VegasVerbosity level);
 
-    void set_integrand(VEGAS_INTEGRAND && integrand, int dim, void* param);
+    void set_integrand(VEGAS_INTEGRAND && integrand, int dimensions, void* param);
     void improve_grid();
     void integrate(double eps_rel = 1e-3, double eps_abs = 1e-9);
     

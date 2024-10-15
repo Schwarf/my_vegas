@@ -9,23 +9,23 @@ void VegasNumericalIntegration::Set_Verbose(VegasVerbosity level)
     verbosity = level;
 }
 
-void VegasNumericalIntegration::set_integrand(VEGAS_INTEGRAND && integrand, int dim, void* param)
+void VegasNumericalIntegration::set_integrand(VEGAS_INTEGRAND && integrand, int dimensions, void* param)
 {
     function_integrand = integrand;
-    dimensions = dim;
+    number_of_dimensions = dimensions;
     userdata = param;
     results.clear();
     sigma2.clear();
-    map = VegasMap(dim);
+    map = VegasMap(dimensions);
     const unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     random_number_generator.seed(seed);
 }
 
 void VegasNumericalIntegration::improve_grid()
 {
-    std::vector<double> random_numbers(dimensions);
-    std::vector<double> y(dimensions); // Random number between 0 to 1;
-    std::vector<double> x(dimensions); // The argument for integrand;
+    std::vector<double> random_numbers(number_of_dimensions);
+    std::vector<double> y(number_of_dimensions); // Random number between 0 to 1;
+    std::vector<double> x(number_of_dimensions); // The argument for integrand;
     double f_eval; // evaluated integrand value;
     double Jac;
     int iter = 0;
@@ -42,7 +42,7 @@ void VegasNumericalIntegration::improve_grid()
     double Ih;
     double Sig2;
     double acc;
-    strat.Set_Dimension(dimensions);
+    strat.Set_Dimension(number_of_dimensions);
     dV = strat.Get_V_Cubic();
     map.set_alpha(alpha_start);
     // Warm Up with just MAP improvement
@@ -61,7 +61,7 @@ void VegasNumericalIntegration::improve_grid()
         Jf2 = 0;
         for (int evaluation = 0; evaluation < NEVAL_START; evaluation++)
         {
-            for (int i_dim = 0; i_dim < dimensions; i_dim++)
+            for (int i_dim = 0; i_dim < number_of_dimensions; i_dim++)
             {
                 random_numbers[i_dim] = distribution(random_number_generator);
             }
@@ -123,7 +123,7 @@ void VegasNumericalIntegration::improve_grid()
             NEVAL_REAL += neval;
             for (int ne = 0; ne < neval; ne++)
             {
-                for (int i_dim = 0; i_dim < dimensions; i_dim++)
+                for (int i_dim = 0; i_dim < number_of_dimensions; i_dim++)
                 {
                     random_numbers[i_dim] = distribution(random_number_generator);
                 }
@@ -191,9 +191,9 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
 {
     // We try to reach either relative error (eps_rel) or absolute error (eps_abs)
     // But we also need to make sure chi2 is not bigger than the iteration numbers
-    std::vector<double> yrnd(dimensions);
-    std::vector<double> y(dimensions); // Random number between 0 to 1;
-    std::vector<double> x(dimensions); // The argument for integrand;
+    std::vector<double> yrnd(number_of_dimensions);
+    std::vector<double> y(number_of_dimensions); // Random number between 0 to 1;
+    std::vector<double> x(number_of_dimensions); // The argument for integrand;
     double f_eval{}; // evaluated integrand value;
     double Jac{}; // The Jacobian from y to x;
     int starting_number_of_evaluations{50000};
@@ -230,7 +230,7 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
             number_of_real_evaluations += number_of_evaluations;
             for (int evaluation{}; evaluation < number_of_evaluations; evaluation++)
             {
-                for (int dimension_index = 0; dimension_index < dimensions; dimension_index++)
+                for (int dimension_index = 0; dimension_index < number_of_dimensions; dimension_index++)
                 {
                     yrnd[dimension_index] = distribution(random_number_generator);
                 }
