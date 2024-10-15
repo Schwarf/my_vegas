@@ -10,11 +10,10 @@
 // * 1. Keep track the mapping between y to x
 // * 2. Keep the Jacobian from y to x
 // * 3. Take care of the grid map improvements
+template <int NumberOfDimensions, int NumberOfIntervals = 1000>
 class VegasMap
 {
 private:
-    int number_of_dimensions;
-    int number_of_intervals;
     int number_of_edges; // number_of_intervals + 1;
     double alpha; // The parameter control the smooth of weight
     
@@ -42,16 +41,14 @@ private:
 
 public:
     VegasMap();
-    explicit VegasMap(int dimensions);
-    VegasMap(int NDIM, int Intervals);
-    ~VegasMap(){};
+    ~VegasMap() = default;
 
     void reset_map();
     void set_alpha(double alp){ alpha = alp;};
     void accumulate_weight(const std::vector<double> & y, double f); // f is the integrand, no other manupulation
     void update_map();
 
-    int Get_N_Interval() const {return number_of_intervals;}
+    constexpr int Get_N_Interval() const {return NumberOfIntervals;}
 
     std::vector<double> get_x(const std::vector<double> &random_numbers);
     double get_jacobian(const std::vector<double> &random_numbers);
@@ -62,6 +59,7 @@ public:
     double checking_map();
 };
 
+#include "VEGAS_map.inl"
 
 
 #endif // VEGAS_MAP_H

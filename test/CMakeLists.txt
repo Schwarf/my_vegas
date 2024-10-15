@@ -17,5 +17,5 @@ TARGET_LINK_LIBRARIES(VEGASINTERTEST ${ABS_VEGAS_LIBRARIES})
 
 add_executable(test_my_vegas test_simple_functions.cpp)
 
-target_link_libraries(test_my_vegas  ${ABS_VEGAS_LIBRARIES} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
+target_link_libraries(test_my_vegas  ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
 

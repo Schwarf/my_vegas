@@ -15,7 +15,7 @@ VegasNumericalIntegration<NumberOfDimensions>::set_integrand(VEGAS_INTEGRAND &&i
     userdata = param;
     results.clear();
     sigma2.clear();
-    map = VegasMap(NumberOfDimensions);
+    map = VegasMap<NumberOfDimensions>();
     const unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     random_number_generator.seed(seed);
 }
