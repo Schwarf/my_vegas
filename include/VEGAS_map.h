@@ -32,7 +32,7 @@ private:
 
     void smooth_weight();
 
-    void reset_weight();
+    void reset_weights();
 
     void check_weight();
 
@@ -51,14 +51,14 @@ public:
 
     void set_alpha(double alp) { alpha = alp; };
 
-    void accumulate_weight(const std::vector<double> &y, double f); // f is the integrand, no other manupulation
+    void accumulate_weight(double evaluated_integrand); // evaluated_integrand is the integrand, no other manupulation
     void update_map();
 
     constexpr int Get_N_Interval() const { return NumberOfIntervals; }
 
     std::vector<double> get_x(const std::vector<double> &random_numbers);
 
-    double get_jacobian(const std::vector<double> &random_numbers);
+    double get_jacobian();
 
     void print_edges();
 

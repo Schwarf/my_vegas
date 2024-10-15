@@ -28,9 +28,8 @@ VegasMap<NumberOfDimensions, NumberOfIntervals>::VegasMap() {
 }
 
 
-
 template<int NumberOfDimensions, int NumberOfIntervals>
-void VegasMap<NumberOfDimensions, NumberOfIntervals>::reset_weight() {
+void VegasMap<NumberOfDimensions, NumberOfIntervals>::reset_weights() {
     for (auto &row: weights) {
         std::fill(row.begin(), row.end(), 0.0);
     }
@@ -51,29 +50,27 @@ template<int NumberOfDimensions, int NumberOfIntervals>
 std::vector<double>
 VegasMap<NumberOfDimensions, NumberOfIntervals>::get_interval_offset(const std::vector<double> &random_numbers) const {
 //    auto ID = compute_interval_ID(random_numbers);
-    std::vector<double> res(NumberOfDimensions);
+    std::vector<double> interval_offset(NumberOfDimensions);
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
-        res[dimension] = random_numbers[dimension] * NumberOfIntervals - ID[dimension];
+        interval_offset[dimension] = random_numbers[dimension] * NumberOfIntervals - ID[dimension];
     }
-    return res; // Profiling spot compare with move semantics
+    return interval_offset; // Profiling spot compare with move semantics
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
 std::vector<double> VegasMap<NumberOfDimensions, NumberOfIntervals>::get_x(const std::vector<double> &random_numbers) {
-//    auto ID = compute_interval_ID(random_numbers);
     compute_interval_ID(random_numbers);
     auto offset = get_interval_offset(random_numbers);
-    std::vector<double> res(NumberOfDimensions);
+    std::vector<double> x(NumberOfDimensions);
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         int id = ID[dimension];
-        res[dimension] = x_edges[dimension][id] + dx_steps[dimension][id] * offset[dimension];
+        x[dimension] = x_edges[dimension][id] + dx_steps[dimension][id] * offset[dimension];
     }
-    return res; // Profiling spot compare with move semantics
+    return x; // Profiling spot compare with move semantics
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
-double VegasMap<NumberOfDimensions, NumberOfIntervals>::get_jacobian(const std::vector<double> &random_numbers) {
-//    auto ID = compute_interval_ID(random_numbers);
+double VegasMap<NumberOfDimensions, NumberOfIntervals>::get_jacobian() {
     double jacobian{1.0};
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         int id = ID[dimension];
@@ -83,20 +80,17 @@ double VegasMap<NumberOfDimensions, NumberOfIntervals>::get_jacobian(const std::
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
-void VegasMap<NumberOfDimensions, NumberOfIntervals>::accumulate_weight(const std::vector<double> &y, double f) {
-    // f is the value of integrand!
-//    auto ID = compute_interval_ID(y);
+void VegasMap<NumberOfDimensions, NumberOfIntervals>::accumulate_weight(double evaluated_integrand) {
+    const auto jacobian = get_jacobian();
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         int id = ID[dimension];
-        weights[dimension][id] += (f * get_jacobian(y)) * (f * get_jacobian(y));
+        weights[dimension][id] += (evaluated_integrand * jacobian) * (evaluated_integrand * jacobian);
         counts[dimension][id] += 1;
-        // std::cout<<"ID: "<<id<<" weight: "<<weights[dimension][id]<<" counts: "<<counts[dimension][id]<<std::endl;
     }
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weight() {
-    // std::cout<<"Smoothing weight"<<std::endl;
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         for (int interval{}; interval < NumberOfIntervals; ++interval) {
             if (counts[dimension][interval] != 0) {
@@ -104,7 +98,6 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weight() {
             }
         }
     }
-    // std::cout<<"Count devided!"<<std::endl;
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         double d_tmp;
         double d_sum = std::accumulate(weights[dimension].begin(), weights[dimension].end(), 0.0);
@@ -120,7 +113,8 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weight() {
 
         // Handle the main loop (1 <= i < NumberOfIntervals - 1)
         for (int interval = 1; interval < NumberOfIntervals - 1; ++interval) {
-            d_tmp = (weights[dimension][interval - 1] + 6.0 * weights[dimension][interval] + weights[dimension][interval + 1]) / (8.0 * d_sum);
+            d_tmp = (weights[dimension][interval - 1] + 6.0 * weights[dimension][interval] +
+                     weights[dimension][interval + 1]) / (8.0 * d_sum);
             if (d_tmp != 0.0) {
                 d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha);
             }
@@ -170,7 +164,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::update_map() {
         dx_steps[dimension][NumberOfIntervals - 1] =
                 x_edges[dimension][NumberOfIntervals] - x_edges[dimension][NumberOfIntervals - 1];
     }
-    reset_weight();
+    reset_weights();
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
@@ -183,7 +177,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::check_weight() {
         average_weight[dimension] /= static_cast<double>(weights[dimension].size());
         for (int interval{}; interval < weights[dimension].size(); ++interval) {
             std_weight[dimension] += (weights[dimension][interval] - average_weight[dimension]) *
-                    (weights[dimension][interval] - average_weight[dimension]);
+                                     (weights[dimension][interval] - average_weight[dimension]);
         }
         std_weight[dimension] = sqrt(std_weight[dimension]);// /average_weight;
     }
@@ -227,9 +221,10 @@ double VegasMap<NumberOfDimensions, NumberOfIntervals>::checking_map() {
     double chi2{};
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         for (int edges{}; edges < (NumberOfIntervals + 1); ++edges) {
-            chi2 += (x_edges[dimension][edges] - x_edges_last[dimension][edges]) * (x_edges[dimension][edges] - x_edges_last[dimension][edges]) / dx_ave /
+            chi2 += (x_edges[dimension][edges] - x_edges_last[dimension][edges]) *
+                    (x_edges[dimension][edges] - x_edges_last[dimension][edges]) / dx_ave /
                     dx_ave;
         }
     }
-    return chi2 / NumberOfDimensions /  (NumberOfIntervals + 1);
+    return chi2 / NumberOfDimensions / (NumberOfIntervals + 1);
 }

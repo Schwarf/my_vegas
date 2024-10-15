@@ -41,7 +41,7 @@ int main(int argc, char const *argv[])
             y[0] = distribution(generator);
             x = GM.get_x(y);
             double weight = func_weight(x);
-            GM.accumulate_weight(y, weight);
+            GM.accumulate_weight(weight);
         }
         // GM.print_weights();
         GM.update_map();

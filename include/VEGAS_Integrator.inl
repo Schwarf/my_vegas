@@ -65,12 +65,12 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
             }
             x = map.get_x(random_numbers);
             evaluated_integrand_value = function_integrand(x, userdata);
-            jacobian = map.get_jacobian(random_numbers);
+            jacobian = map.get_jacobian();
             if (std::isnan(evaluated_integrand_value) || std::isnan(jacobian)) {
                 evaluation--;
                 continue;
             }
-            map.accumulate_weight(random_numbers, evaluated_integrand_value);
+            map.accumulate_weight(evaluated_integrand_value);
             Jf += evaluated_integrand_value * jacobian;
             Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
         }
@@ -133,12 +133,12 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
                 y = strat.Get_Y(inc, random_numbers);
                 x = map.get_x(y);
                 evaluated_integrand_value = function_integrand(x, userdata);
-                jacobian = map.get_jacobian(y);
+                jacobian = map.get_jacobian();
                 if (std::isnan(evaluated_integrand_value) || std::isnan(jacobian)) {
                     evaluation--;
                     continue;
                 }
-                map.accumulate_weight(y, evaluated_integrand_value);
+                map.accumulate_weight(evaluated_integrand_value);
                 strat.Accumulate_Weight(inc, evaluated_integrand_value * jacobian);
                 Jf += evaluated_integrand_value * jacobian;
                 Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
@@ -237,7 +237,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
                 y = strat.Get_Y(inc, random_numbers);
                 x = map.get_x(y);
                 evaluated_integrand_value = function_integrand(x, userdata);
-                jacobian = map.get_jacobian(y);
+                jacobian = map.get_jacobian();
                 if (std::isnan(evaluated_integrand_value) || std::isnan(jacobian)) {
                     evaluation--;
                     continue;
