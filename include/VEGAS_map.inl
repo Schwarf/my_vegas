@@ -7,12 +7,6 @@ template<int NumberOfDimensions, int NumberOfIntervals>
 VegasMap<NumberOfDimensions, NumberOfIntervals>::VegasMap() {
     ID = std::vector<int>(NumberOfDimensions);
     alpha = 0.5;
-    reset_map();
-}
-
-
-template<int NumberOfDimensions, int NumberOfIntervals>
-void VegasMap<NumberOfDimensions, NumberOfIntervals>::reset_map() {
     constexpr double step_tmp = 1.0 / NumberOfIntervals;
     std::vector<double> x_edges_tmp((NumberOfIntervals + 1));
     std::vector<double> dx_steps_tmp((NumberOfIntervals + 1) - 1, step_tmp);
@@ -32,6 +26,8 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::reset_map() {
     average_weight = std::vector<double>(NumberOfDimensions, 0.0);
     std_weight = std::vector<double>(NumberOfDimensions, 0.0);
 }
+
+
 
 template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::reset_weight() {
