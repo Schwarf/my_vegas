@@ -24,7 +24,7 @@ private:
     VegasVerbosity verbosity;
 
     VEGAS_INTEGRAND function_integrand;
-    void *userdata;
+    void *integrand_parameters;
 
     VegasMap<NumberOfDimensions> map{};
     VEGAS_Stratify<NumberOfDimensions> strat;
@@ -43,7 +43,7 @@ public:
 
     void Set_Verbose(VegasVerbosity level);
 
-    void set_integrand(VEGAS_INTEGRAND &&integrand, void *param);
+    void set_integrand(VEGAS_INTEGRAND &&integrand, void *parameters);
 
     void improve_grid();
 

@@ -10,9 +10,9 @@ void VegasNumericalIntegration<NumberOfDimensions>::Set_Verbose(VegasVerbosity l
 
 template<int NumberOfDimensions>
 void
-VegasNumericalIntegration<NumberOfDimensions>::set_integrand(VEGAS_INTEGRAND &&integrand, void *param) {
+VegasNumericalIntegration<NumberOfDimensions>::set_integrand(VEGAS_INTEGRAND &&integrand, void *parameters) {
     function_integrand = integrand;
-    userdata = param;
+    integrand_parameters = parameters;
     results.clear();
     sigma2.clear();
     map = VegasMap<NumberOfDimensions>();
@@ -40,7 +40,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
     double Sig2{};
     double accuracy{};
 
-    double dV = strat.Get_V_Cubic();
+    double dV = strat.get_V_cubic();
 
     map.set_alpha(alpha_start);
     // Warm Up with just MAP improvement
@@ -64,7 +64,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
                 random_numbers[dimension_index] = distribution(random_number_generator);
             }
             x = map.get_x(random_numbers);
-            evaluated_integrand_value = function_integrand(x, userdata);
+            evaluated_integrand_value = function_integrand(x, integrand_parameters);
             jacobian = map.get_jacobian();
             if (std::isnan(evaluated_integrand_value) || std::isnan(jacobian)) {
                 evaluation--;
@@ -121,25 +121,25 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
         results.push_back(0);
         sigma2.push_back(0);
         NEVAL_REAL = 0;
-        for (int inc = 0; inc < strat.Get_NHYPERCUBICS(); inc++) {
+        for (int cube_index = 0; cube_index < strat.Get_NHYPERCUBICS(); cube_index++) {
             Jf = 0;
             Jf2 = 0;
-            number_of_evaluations = strat.Get_NH(inc);
+            number_of_evaluations = strat.get_expected_events_per_hyper_cube(cube_index);
             NEVAL_REAL += number_of_evaluations;
             for (int evaluation{}; evaluation < number_of_evaluations; ++evaluation) {
                 for (int i_dim = 0; i_dim < NumberOfDimensions; i_dim++) {
                     random_numbers[i_dim] = distribution(random_number_generator);
                 }
-                y = strat.Get_Y(inc, random_numbers);
+                y = strat.get_y(cube_index, random_numbers);
                 x = map.get_x(y);
-                evaluated_integrand_value = function_integrand(x, userdata);
+                evaluated_integrand_value = function_integrand(x, integrand_parameters);
                 jacobian = map.get_jacobian();
                 if (std::isnan(evaluated_integrand_value) || std::isnan(jacobian)) {
                     evaluation--;
                     continue;
                 }
                 map.accumulate_weight(evaluated_integrand_value);
-                strat.Accumulate_Weight(inc, evaluated_integrand_value * jacobian);
+                strat.accumulate_weights(cube_index, evaluated_integrand_value * jacobian);
                 Jf += evaluated_integrand_value * jacobian;
                 Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
             }
@@ -156,7 +156,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
             // map.set_alpha(alpha);
             // }
         } else {
-            strat.Update_DH();
+            strat.update_hypercubic_weights();
         }
         accuracy = sqrt(sigma2[sigma2.size() - 1]) / results[results.size() - 1];
         if (verbosity >= VegasVerbosity::Info) {
@@ -202,7 +202,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
     double evaluated_integrand_value{}; // evaluated integrand value;
     double jacobian{}; // The Jacobian from y to x;
     int starting_number_of_evaluations{50000};
-    double dV = strat.Get_V_Cubic();
+    double dV = strat.get_V_cubic();
     int number_of_iterations{};
     double result{};
     double error{};
@@ -228,21 +228,21 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
         for (int inc = 0; inc < strat.Get_NHYPERCUBICS(); inc++) {
             Jf = 0.0;
             Jf2 = 0.0;
-            number_of_evaluations = strat.Get_NH(inc);
+            number_of_evaluations = strat.get_expected_events_per_hyper_cube(inc);
             number_of_real_evaluations += number_of_evaluations;
             for (int evaluation{}; evaluation < number_of_evaluations; evaluation++) {
                 for (int dimension_index = 0; dimension_index < NumberOfDimensions; dimension_index++) {
                     random_numbers[dimension_index] = distribution(random_number_generator);
                 }
-                y = strat.Get_Y(inc, random_numbers);
+                y = strat.get_y(inc, random_numbers);
                 x = map.get_x(y);
-                evaluated_integrand_value = function_integrand(x, userdata);
+                evaluated_integrand_value = function_integrand(x, integrand_parameters);
                 jacobian = map.get_jacobian();
                 if (std::isnan(evaluated_integrand_value) || std::isnan(jacobian)) {
                     evaluation--;
                     continue;
                 }
-                strat.Accumulate_Weight(inc, evaluated_integrand_value * jacobian);
+                strat.accumulate_weights(inc, evaluated_integrand_value * jacobian);
                 Jf += evaluated_integrand_value * jacobian;
                 Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
             }
@@ -251,7 +251,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
             results[results.size() - 1] += Ih;
             sigma2[sigma2.size() - 1] += Sig2 / number_of_evaluations;
         }
-        strat.Update_DH();
+        strat.update_hypercubic_weights();
         accuracy = sqrt(sigma2[sigma2.size() - 1]) / results[results.size() - 1];
         if (verbosity >= VegasVerbosity::Info) {
             std::cout << "| " << std::setw(6) << number_of_iterations << " | " << std::setw(12)
