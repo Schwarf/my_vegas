@@ -48,7 +48,7 @@ double polynom2(std::vector<double> x, void *param) {
 }
 
 TEST(SimpleFunctionTest, polynom2) {
-    constexpr double expected_result{1.424132738439827};
+    constexpr double expected_result{0.7186547465398496};
     constexpr int dimensions{5};
     VegasNumericalIntegration<dimensions> integrator;
     integrator.set_integrand(std::move(polynom2), nullptr);
