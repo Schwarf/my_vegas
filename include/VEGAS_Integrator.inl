@@ -40,7 +40,6 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
     double Sig2{};
     double accuracy{};
 
-    strat.Set_Dimension(NumberOfDimensions);
     double dV = strat.Get_V_Cubic();
 
     map.set_alpha(alpha_start);

@@ -29,7 +29,7 @@ private:
     void* userdata;
 
     VegasMap map;
-    VEGAS_Stratify strat;
+    VEGAS_Stratify<NumberOfDimensions> strat;
 
     std::mt19937 random_number_generator; // Mersenne twister random number engine
     std::uniform_real_distribution<double> distribution; // uniform distribution in double in [0.0, 1.0)

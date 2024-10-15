@@ -4,17 +4,17 @@
 #include <vector>
 #include <cmath>
 
+template <int NumberOfDimensions>
 class VEGAS_Stratify
 {
 private:
-    int number_of_dimensions{};
     int N_STRAT;
     double beta{};
     double V_cubic{};
-    std::vector<double> JF2; // size = (N_STRAT)^(number_of_dimensions)
-    std::vector<double> JF; // size = (N_STRAT)^(number_of_dimensions)
-    std::vector<double> Counts; // size = (N_STRAT)^(number_of_dimensions)
-    std::vector<double> dh; // size = (N_STRAT)^(number_of_dimensions)
+    std::vector<double> JF2; // size = (N_STRAT)^(NumberOfDimensions)
+    std::vector<double> JF; // size = (N_STRAT)^(NumberOfDimensions)
+    std::vector<double> Counts; // size = (N_STRAT)^(NumberOfDimensions)
+    std::vector<double> dh; // size = (N_STRAT)^(NumberOfDimensions)
     // int N_EVALUATES_TRAINED; // The evaluates number used to train the stratification
     int number_of_expected_evaluations{};
     int number_of_hyper_cubes{};
@@ -22,34 +22,29 @@ private:
 
 
 public:
-    void Set_Dimension(int ndim)
-    {
-        number_of_dimensions = ndim;
-        Reset_Storage();
-    }
     void Set_NEVAL(int NEVAL_EXP)
     {
         number_of_expected_evaluations = NEVAL_EXP;
     }
 // void Set_Stratification_System(int ndim, int NEVAL_TRAIN)
 // {
-//     number_of_dimensions = ndim;
+//     NumberOfDimensions = ndim;
 //     N_EVALUATES_TRAINED = NEVAL_TRAIN;
 //     Reset_Storage();
 // }
     void Reset_Storage()
     {
-        // N_STRAT = floor(pow(N_EVALUATES_TRAINED/4.0,1.0/number_of_dimensions));
+        // N_STRAT = floor(pow(N_EVALUATES_TRAINED/4.0,1.0/NumberOfDimensions));
 
-        number_of_hyper_cubes = pow(N_STRAT, number_of_dimensions);
-        if (number_of_hyper_cubes > maximum_number_of_hyper_cubes || number_of_dimensions > 9) // if number_of_dimensions too large, number_of_hyper_cubes will exceed the MAXIMUM number an integer can store
+        number_of_hyper_cubes = pow(N_STRAT, NumberOfDimensions);
+        if (number_of_hyper_cubes > maximum_number_of_hyper_cubes || NumberOfDimensions > 9) // if NumberOfDimensions too large, number_of_hyper_cubes will exceed the MAXIMUM number an integer can store
         {
-            N_STRAT = floor(pow(maximum_number_of_hyper_cubes, 1.0 / number_of_dimensions));
-            number_of_hyper_cubes = pow(N_STRAT, number_of_dimensions);
+            N_STRAT = floor(pow(maximum_number_of_hyper_cubes, 1.0 / NumberOfDimensions));
+            number_of_hyper_cubes = pow(N_STRAT, NumberOfDimensions);
         }
 
 
-        V_cubic = pow(1.0/N_STRAT, number_of_dimensions);
+        V_cubic = pow(1.0/N_STRAT, NumberOfDimensions);
         JF2 = std::vector<double>(number_of_hyper_cubes, 0);
         JF  = std::vector<double>(number_of_hyper_cubes, 0);
         Counts = std::vector<double>(number_of_hyper_cubes, 0);
@@ -57,11 +52,11 @@ public:
     }
     std::vector<int> Get_Indices(int index)
     {
-        std::vector<int> res(number_of_dimensions, 0);
+        std::vector<int> res(NumberOfDimensions, 0);
         int Quotient;
         int tmp = index;
         int Remainder;
-        for (int i = 0; i < number_of_dimensions; i++)
+        for (int i = 0; i < NumberOfDimensions; i++)
         {
             Quotient = tmp/N_STRAT;
             Remainder = tmp - Quotient*N_STRAT;
@@ -74,9 +69,9 @@ public:
     std::vector<double> Get_Y(int index, std::vector<double> random_uni)
     {
         double dy = 1.0/N_STRAT;
-        std::vector<double> res(number_of_dimensions, 0);
+        std::vector<double> res(NumberOfDimensions, 0);
         std::vector<int> ID = Get_Indices(index);
-        for (int i = 0; i < number_of_dimensions; i++)
+        for (int i = 0; i < NumberOfDimensions; i++)
         {
             res[i] = random_uni[i]*dy + ID[i]*dy;
         }
@@ -110,13 +105,13 @@ public:
         return nh<2?2:nh;
     }
 
-    VEGAS_Stratify(): number_of_dimensions{1}, N_STRAT{10}, beta{0.75}, maximum_number_of_hyper_cubes{10000}{
+    VEGAS_Stratify(): N_STRAT{10}, beta{0.75}, maximum_number_of_hyper_cubes{10000}{
         Reset_Storage();
     };
     ~VEGAS_Stratify(){};
     double Get_V_Cubic(){return V_cubic;}
     int Get_NHYPERCUBICS(){return number_of_hyper_cubes;};
-    // void Set_Stratification_System(int number_of_dimensions, int NEVAL_TRAIN);
+    // void Set_Stratification_System(int NumberOfDimensions, int NEVAL_TRAIN);
 };
 
 
