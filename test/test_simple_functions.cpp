@@ -39,8 +39,8 @@ constexpr double sigma_range{3.0};
 TEST(SimpleFunctionTest, polynom) {
     constexpr double expected_result{2.874618986159398};
     constexpr int dimensions{3};
-    VegasNumericalIntegration integrator;
-    integrator.set_integrand(std::move(polynom), dimensions, nullptr);
+    VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_integrand(std::move(polynom), nullptr);
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
@@ -52,8 +52,8 @@ TEST(SimpleFunctionTest, polynom) {
 TEST(SimpleFunctionTest, sinus) {
     constexpr double expected_result{0.12243402879673784};
     constexpr int dimensions{3};
-    VegasNumericalIntegration integrator;
-    integrator.set_integrand(std::move(sinus), dimensions, nullptr);
+    VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_integrand(std::move(sinus), nullptr);
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
