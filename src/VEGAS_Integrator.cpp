@@ -31,18 +31,19 @@ void VegasNumericalIntegration::improve_grid()
     int number_of_iterations{};
     int starting_number_of_evaluations = 10000;
     constexpr double alpha_start{0.5};
-    double dV{};
     double result{};
     double error{};
     int number_of_evaluations{};
-    int NEVAL_REAL;
-    double Jf;
-    double Jf2;
-    double Ih;
-    double Sig2;
+    int NEVAL_REAL{};
+    double Jf{};
+    double Jf2{};
+    double Ih{};
+    double Sig2{};
     double accuracy{};
+
     strat.Set_Dimension(number_of_dimensions);
-    dV = strat.Get_V_Cubic();
+    double dV = strat.Get_V_Cubic();
+
     map.set_alpha(alpha_start);
     // Warm Up with just MAP improvement
     if (verbosity >= VegasVerbosity::Info)
@@ -176,7 +177,7 @@ void VegasNumericalIntegration::improve_grid()
             {
                 break;
             }
-            starting_number_of_evaluations = starting_number_of_evaluations * sqrt(accuracy / 0.01);
+            starting_number_of_evaluations *= static_cast<int>(sqrt(accuracy / 0.01));
             results.clear();
             sigma2.clear();
         }
@@ -203,10 +204,10 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
     double chi_squared{};
     int number_of_evaluations{};
     int number_of_real_evaluations{};
-    double Jf;
-    double Jf2;
-    double Ih;
-    double Sig2;
+    double Jf{};
+    double Jf2{};
+    double Ih{};
+    double Sig2{};
     double accuracy{};
     if (verbosity >= VegasVerbosity::Info)
     {
@@ -223,8 +224,8 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
         sigma2.push_back(0);
         for (int inc = 0; inc < strat.Get_NHYPERCUBICS(); inc++)
         {
-            Jf = 0;
-            Jf2 = 0;
+            Jf = 0.0;
+            Jf2 = 0.0;
             number_of_evaluations = strat.Get_NH(inc);
             number_of_real_evaluations += number_of_evaluations;
             for (int evaluation{}; evaluation < number_of_evaluations; evaluation++)
@@ -274,7 +275,7 @@ void VegasNumericalIntegration::integrate(double eps_rel, double eps_abs)
             }
             if (chi_squared / 5.0 < 1.0)
             {
-                starting_number_of_evaluations = starting_number_of_evaluations * sqrt(accuracy / eps_rel);
+                starting_number_of_evaluations *= static_cast<int>(sqrt(accuracy / eps_rel));
                 results.clear();
                 sigma2.clear();
                 continue;
@@ -315,9 +316,9 @@ double VegasNumericalIntegration::get_result()
 double VegasNumericalIntegration::get_error()
 {
     double res = 0;
-    for (int i = 0; i < sigma2.size(); i++)
+    for (double sigma_element : sigma2)
     {
-        res += 1.0 / sigma2[i];
+        res += 1.0 / sigma_element;
     }
     return 1.0/sqrt(res);
 }
