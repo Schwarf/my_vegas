@@ -27,7 +27,7 @@ double func_weight(vector<double> x)
 // }
 int main(int argc, char const *argv[])
 {
-    VegasMap GM;
+    VegasMap<1> GM;
     default_random_engine generator;
     uniform_real_distribution<double> distribution(0,1);
     for (int i = 0; i < 50; i++)
