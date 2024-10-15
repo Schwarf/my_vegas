@@ -8,11 +8,10 @@
 #include <functional>
 #include <any>
 
-using VEGAS_INTEGRAND = std::function<double(const std::vector<double>&, void* param)>;
+using VEGAS_INTEGRAND = std::function<double(const std::vector<double> &, void *param)>;
 //typedef double (*INTEGRAND)(std::vector<double> x, void *param);
 
-enum class VegasVerbosity
-{
+enum class VegasVerbosity {
     None = 0,
     Info = 1,
     Debug = 2,
@@ -20,13 +19,12 @@ enum class VegasVerbosity
 };
 
 template<int NumberOfDimensions>
-class VegasNumericalIntegration
-{
+class VegasNumericalIntegration {
 private:
     VegasVerbosity verbosity;
 
     VEGAS_INTEGRAND function_integrand;
-    void* userdata;
+    void *userdata;
 
     VegasMap<NumberOfDimensions> map{};
     VEGAS_Stratify<NumberOfDimensions> strat;
@@ -39,21 +37,27 @@ private:
 
 
 public:
-    VegasNumericalIntegration(){ verbosity = VegasVerbosity::Info;};
+    VegasNumericalIntegration() { verbosity = VegasVerbosity::Info; };
+
     ~VegasNumericalIntegration() = default;
 
     void Set_Verbose(VegasVerbosity level);
 
-    void set_integrand(VEGAS_INTEGRAND && integrand, void* param);
+    void set_integrand(VEGAS_INTEGRAND &&integrand, void *param);
+
     void improve_grid();
+
     void integrate(double eps_rel = 1e-3, double eps_abs = 1e-9);
-    
-    
+
+
     double get_result();
+
     double get_error();
+
     double get_chisquare();
 
 };
 
 #include "VEGAS_Integrator.inl"
+
 #endif //VEGAS_INTEGRATOR_H
