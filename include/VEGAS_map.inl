@@ -3,7 +3,7 @@
 #include <numeric>
 #include <iostream>
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 VegasMap<NumberOfDimensions, NumberOfIntervals>::VegasMap() {
     number_of_edges = NumberOfIntervals + 1;
     ID = std::vector<int>(NumberOfDimensions);
@@ -12,7 +12,7 @@ VegasMap<NumberOfDimensions, NumberOfIntervals>::VegasMap() {
 }
 
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::reset_map() {
     x_edges.clear();
     dx_steps.clear();
@@ -37,22 +37,27 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::reset_map() {
     std_weight = std::vector<double>(NumberOfDimensions, 0.0);
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::reset_weight() {
-    weights = std::vector<std::vector<double> >(NumberOfDimensions, std::vector<double>(NumberOfIntervals, 0));
-    counts = std::vector<std::vector<double> >(NumberOfDimensions, std::vector<double>(NumberOfIntervals, 0));
+    for (auto &row: weights) {
+        std::fill(row.begin(), row.end(), 0.0);
+    }
+
+    for (auto &row: counts) {
+        std::fill(row.begin(), row.end(), 0.0);
+    }
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
-void VegasMap<NumberOfDimensions, NumberOfIntervals>::compute_interval_ID(const std::vector<double> &random_numbers)  {
-
+template<int NumberOfDimensions, int NumberOfIntervals>
+void VegasMap<NumberOfDimensions, NumberOfIntervals>::compute_interval_ID(const std::vector<double> &random_numbers) {
     for (int i = 0; i < NumberOfDimensions; i++) {
         ID[i] = std::floor(random_numbers[i] * NumberOfIntervals);
     }
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
-std::vector<double> VegasMap<NumberOfDimensions, NumberOfIntervals>::get_interval_offset(const std::vector<double> &random_numbers) const {
+template<int NumberOfDimensions, int NumberOfIntervals>
+std::vector<double>
+VegasMap<NumberOfDimensions, NumberOfIntervals>::get_interval_offset(const std::vector<double> &random_numbers) const {
 //    auto ID = compute_interval_ID(random_numbers);
     std::vector<double> res(NumberOfDimensions);
     for (int i = 0; i < NumberOfDimensions; i++) {
@@ -61,7 +66,7 @@ std::vector<double> VegasMap<NumberOfDimensions, NumberOfIntervals>::get_interva
     return res; // Profiling spot compare with move semantics
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 std::vector<double> VegasMap<NumberOfDimensions, NumberOfIntervals>::get_x(const std::vector<double> &random_numbers) {
 //    auto ID = compute_interval_ID(random_numbers);
     compute_interval_ID(random_numbers);
@@ -74,7 +79,7 @@ std::vector<double> VegasMap<NumberOfDimensions, NumberOfIntervals>::get_x(const
     return res; // Profiling spot compare with move semantics
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 double VegasMap<NumberOfDimensions, NumberOfIntervals>::get_jacobian(const std::vector<double> &random_numbers) {
 //    auto ID = compute_interval_ID(random_numbers);
     double jacobian{1.0};
@@ -85,19 +90,19 @@ double VegasMap<NumberOfDimensions, NumberOfIntervals>::get_jacobian(const std::
     return jacobian;
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::accumulate_weight(const std::vector<double> &y, double f) {
     // f is the value of integrand!
 //    auto ID = compute_interval_ID(y);
     for (int i = 0; i < NumberOfDimensions; i++) {
         int id = ID[i];
-        weights[i][id] += (f * get_jacobian(y))*(f * get_jacobian(y));
+        weights[i][id] += (f * get_jacobian(y)) * (f * get_jacobian(y));
         counts[i][id] += 1;
         // std::cout<<"ID: "<<id<<" weight: "<<weights[i][id]<<" counts: "<<counts[i][id]<<std::endl;
     }
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weight() {
     // std::cout<<"Smoothing weight"<<std::endl;
     for (int i_dim = 0; i_dim < NumberOfDimensions; i_dim++) {
@@ -145,7 +150,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weight() {
     }
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::update_map() {
     smooth_weight();
     x_edges_last = x_edges;
@@ -176,7 +181,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::update_map() {
     reset_weight();
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::check_weight() {
     for (int i_dim = 0; i_dim < NumberOfDimensions; i_dim++) {
         average_weight[i_dim] = 0;
@@ -185,13 +190,14 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::check_weight() {
         }
         average_weight[i_dim] /= static_cast<double>(weights[i_dim].size());
         for (int i = 0; i < weights[i_dim].size(); i++) {
-            std_weight[i_dim] += (weights[i_dim][i] - average_weight[i_dim])*(weights[i_dim][i] - average_weight[i_dim]);
+            std_weight[i_dim] +=
+                    (weights[i_dim][i] - average_weight[i_dim]) * (weights[i_dim][i] - average_weight[i_dim]);
         }
         std_weight[i_dim] = sqrt(std_weight[i_dim]);// /average_weight;
     }
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::print_edges() {
     std::cout << "Grid Map:" << std::endl;
     for (int i_dim = 0; i_dim < NumberOfDimensions; i_dim++) {
@@ -208,7 +214,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::print_edges() {
     }
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 void VegasMap<NumberOfDimensions, NumberOfIntervals>::print_weights() {
     std::cout << "Weights:" << std::endl;
     for (int i_dim = 0; i_dim < NumberOfDimensions; i_dim++) {
@@ -223,13 +229,14 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::print_weights() {
     }
 }
 
-template <int NumberOfDimensions, int NumberOfIntervals>
+template<int NumberOfDimensions, int NumberOfIntervals>
 double VegasMap<NumberOfDimensions, NumberOfIntervals>::checking_map() {
     double dx_ave = 1.0 / NumberOfIntervals;
     double chi2{};
     for (int idim = 0; idim < NumberOfDimensions; idim++) {
         for (int i = 0; i < number_of_edges; i++) {
-            chi2 += (x_edges[idim][i] - x_edges_last[idim][i])*(x_edges[idim][i] - x_edges_last[idim][i]) / dx_ave/ dx_ave;
+            chi2 += (x_edges[idim][i] - x_edges_last[idim][i]) * (x_edges[idim][i] - x_edges_last[idim][i]) / dx_ave /
+                    dx_ave;
         }
     }
     return chi2 / NumberOfDimensions / number_of_edges;
