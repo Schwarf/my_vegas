@@ -5,26 +5,33 @@
 
 template<int NumberOfDimensions, int NumberOfIntervals>
 VegasMap<NumberOfDimensions, NumberOfIntervals>::VegasMap() {
-    ID = std::vector<int>(NumberOfDimensions);
+
     alpha = 0.5;
     constexpr double step_tmp = 1.0 / NumberOfIntervals;
-    std::vector<double> x_edges_tmp((NumberOfIntervals + 1));
-    std::vector<double> dx_steps_tmp((NumberOfIntervals + 1) - 1, step_tmp);
+    std::array<double, NumberOfIntervals + 1> x_edges_tmp;
+    std::array<double, NumberOfIntervals> dx_steps_tmp;
+    for (size_t i = 1; i < NumberOfIntervals + 1; ++i) {
+        x_edges_tmp[i] = i * step_tmp;  // 'step_tmp' needs to be defined before this point
+    }
+//    std::vector<double> x_edges_tmp((NumberOfIntervals + 1));
+//    std::vector<double> dx_steps_tmp((NumberOfIntervals + 1) - 1, step_tmp);
     for (int i = 1; i < (NumberOfIntervals + 1); i++) {
         x_edges_tmp[i] = i * step_tmp;
     }
-    x_edges = std::vector<std::vector<double> >(NumberOfDimensions, x_edges_tmp);
-    dx_steps = std::vector<std::vector<double> >(NumberOfDimensions, dx_steps_tmp);
-    x_edges_last = std::vector<std::vector<double> >(NumberOfDimensions, x_edges_tmp);
-    dx_steps_last = std::vector<std::vector<double> >(NumberOfDimensions, dx_steps_tmp);
-    weights = std::vector<std::vector<double> >(NumberOfDimensions, std::vector<double>(NumberOfIntervals, 0.0));
-    counts = std::vector<std::vector<double> >(NumberOfDimensions, std::vector<double>(NumberOfIntervals, 0.0));
-    smoothed_weights = std::vector<std::vector<double> >(NumberOfDimensions,
-                                                         std::vector<double>(NumberOfIntervals, 0.0));
-    summed_weights = std::vector<double>(NumberOfDimensions, 0.0);
-    delta_weights = std::vector<double>(NumberOfDimensions, 0.0);
-    average_weight = std::vector<double>(NumberOfDimensions, 0.0);
-    std_weight = std::vector<double>(NumberOfDimensions, 0.0);
+    dx_steps_tmp.fill(step_tmp);
+    for (auto& edge : x_edges) {
+        edge = x_edges_tmp;
+    }
+    for (auto& edge : x_edges_last) {
+        edge = x_edges_tmp;
+    }
+
+    for (auto& step : dx_steps) {
+         step = dx_steps_tmp;
+    }
+    for (auto& step : dx_steps_last) {
+        step = dx_steps_tmp;
+    }
 }
 
 

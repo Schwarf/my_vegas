@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <cmath>
-
+#include "misc.h"
 template<int NumberOfDimensions>
 class VEGAS_Stratify {
 public:
@@ -11,8 +11,8 @@ public:
         // N_STRAT = floor(pow(N_EVALUATES_TRAINED/4.0,1.0/NumberOfDimensions));
 
         number_of_hyper_cubes = pow(N_STRAT, NumberOfDimensions);
-        if (number_of_hyper_cubes > maximum_number_of_hyper_cubes || NumberOfDimensions >
-                                                                     9) // if NumberOfDimensions too large, number_of_hyper_cubes will exceed the MAXIMUM number an integer can store
+        // if NumberOfDimensions too large, number_of_hyper_cubes will exceed the MAXIMUM number an integer can store
+        if (number_of_hyper_cubes > maximum_number_of_hyper_cubes || NumberOfDimensions > 9)
         {
             N_STRAT = floor(pow(maximum_number_of_hyper_cubes, 1.0 / NumberOfDimensions));
             number_of_hyper_cubes = pow(N_STRAT, NumberOfDimensions);

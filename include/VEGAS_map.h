@@ -2,6 +2,7 @@
 #define VEGAS_MAP_H
 
 #include <vector>
+#include <array>
 #include <string>
 
 // * This is the grid map from y to x:
@@ -17,18 +18,31 @@ private:
 //    int number_of_edges; // number_of_intervals + 1;
     double alpha; // The parameter control the smooth of weight
 
-    std::vector<std::vector<double> > x_edges; // The edges in x, size = number_of_dimensions x number_of_edges;
-    std::vector<std::vector<double> > dx_steps; // The step for each interval, size = number_of_dimensions x number_of_intervals;
-
-    std::vector<std::vector<double> > x_edges_last; // The edges in x, size = number_of_dimensions x number_of_edges;
-    std::vector<std::vector<double> > dx_steps_last; // The step for each interval, size = number_of_dimensions x number_of_intervals;
-
-    std::vector<std::vector<double> > weights; // The weight in each interval, used to improve the grid map, size = number_of_dimensions x number_of_intervals;
-    std::vector<std::vector<double> > counts; // Count the numbers of random numbers in specific interval, size = number_of_dimensions x number_of_intervals;
-
-    std::vector<std::vector<double> > smoothed_weights; // Smoothed weights, also renormalized, size = number_of_dimensions x  number_of_intervals
-    std::vector<double> summed_weights; // The all summed smoothed weights, size = number_of_dimensions
-    std::vector<double> delta_weights; // The step for weights, size = number_of_dimensions
+//    std::array<std::array<double, NumberOfIntervals+1>, NumberOfDimensions> x_egs
+    std::array<std::array<double, NumberOfIntervals + 1>, NumberOfDimensions> x_edges;
+    std::array<std::array<double, NumberOfIntervals>, NumberOfDimensions> dx_steps;
+    std::array<std::array<double, NumberOfIntervals + 1>, NumberOfDimensions> x_edges_last;
+    std::array<std::array<double, NumberOfIntervals>, NumberOfDimensions> dx_steps_last;
+    std::array<std::array<double, NumberOfIntervals>, NumberOfDimensions> weights = {};
+    std::array<std::array<double, NumberOfIntervals>, NumberOfDimensions> counts = {};
+    std::array<std::array<double, NumberOfIntervals>, NumberOfDimensions> smoothed_weights = {};
+    std::array<double, NumberOfDimensions> summed_weights = {};
+    std::array<double, NumberOfDimensions> delta_weights = {};
+    std::array<double, NumberOfDimensions> average_weight = {};
+    std::array<double, NumberOfDimensions> std_weight = {};
+    std::array<int, NumberOfDimensions> ID = {};
+//    std::vector<std::vector<double> > x_edges; // The edges in x, size = number_of_dimensions x number_of_edges;
+//    std::vector<std::vector<double> > dx_steps; // The step for each interval, size = number_of_dimensions x number_of_intervals;
+//
+//    std::vector<std::vector<double> > x_edges_last; // The edges in x, size = number_of_dimensions x number_of_edges;
+//    std::vector<std::vector<double> > dx_steps_last; // The step for each interval, size = number_of_dimensions x number_of_intervals;
+//
+//    std::vector<std::vector<double> > weights; // The weight in each interval, used to improve the grid map, size = number_of_dimensions x number_of_intervals;
+//    std::vector<std::vector<double> > counts; // Count the numbers of random numbers in specific interval, size = number_of_dimensions x number_of_intervals;
+//
+//    std::vector<std::vector<double> > smoothed_weights; // Smoothed weights, also renormalized, size = number_of_dimensions x  number_of_intervals
+//    std::vector<double> summed_weights; // The all summed smoothed weights, size = number_of_dimensions
+//    std::vector<double> delta_weights; // The step for weights, size = number_of_dimensions
 
     void smooth_weights();
 
@@ -36,13 +50,12 @@ private:
 
     void check_weight();
 
-    std::vector<double> average_weight; // size = number_of_dimensions
-    std::vector<double> std_weight; // size = number_of_dimensions
+//    std::vector<double> average_weight; // size = number_of_dimensions
+//    std::vector<double> std_weight; // size = number_of_dimensions
     void compute_interval_ID(const std::vector<double> &random_numbers);
 
     std::vector<double> get_interval_offset(const std::vector<double> &random_numbers) const;
 
-    std::vector<int> ID;
 
 public:
     VegasMap();
