@@ -8,7 +8,8 @@
 #include <functional>
 #include <any>
 
-using VEGAS_INTEGRAND = std::function<double(const std::vector<double> &, void *param)>;
+template <int NumberOfDimensions>
+using VEGAS_INTEGRAND = std::function<double(const std::array<double, NumberOfDimensions> &, void *param)>;
 //typedef double (*INTEGRAND)(std::vector<double> x, void *param);
 
 enum class VegasVerbosity {
@@ -23,7 +24,7 @@ class VegasNumericalIntegration {
 private:
     VegasVerbosity verbosity;
 
-    VEGAS_INTEGRAND function_integrand;
+    VEGAS_INTEGRAND<NumberOfDimensions> function_integrand;
     void *integrand_parameters;
 
     VegasMap<NumberOfDimensions> map{};
@@ -43,7 +44,7 @@ public:
 
     void Set_Verbose(VegasVerbosity level);
 
-    void set_integrand(VEGAS_INTEGRAND &&integrand, void *parameters);
+    void set_integrand(VEGAS_INTEGRAND<NumberOfDimensions> &&integrand, void *parameters);
 
     void improve_grid();
 

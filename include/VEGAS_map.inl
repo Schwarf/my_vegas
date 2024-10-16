@@ -19,17 +19,17 @@ VegasMap<NumberOfDimensions, NumberOfIntervals>::VegasMap() {
         x_edges_tmp[i] = i * step_tmp;
     }
     dx_steps_tmp.fill(step_tmp);
-    for (auto& edge : x_edges) {
+    for (auto &edge: x_edges) {
         edge = x_edges_tmp;
     }
-    for (auto& edge : x_edges_last) {
+    for (auto &edge: x_edges_last) {
         edge = x_edges_tmp;
     }
 
-    for (auto& step : dx_steps) {
-         step = dx_steps_tmp;
+    for (auto &step: dx_steps) {
+        step = dx_steps_tmp;
     }
-    for (auto& step : dx_steps_last) {
+    for (auto &step: dx_steps_last) {
         step = dx_steps_tmp;
     }
 }
@@ -47,17 +47,17 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::reset_weights() {
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
-void VegasMap<NumberOfDimensions, NumberOfIntervals>::compute_interval_ID(const std::vector<double> &random_numbers) {
+void VegasMap<NumberOfDimensions, NumberOfIntervals>::compute_interval_ID(const std::array<double, NumberOfDimensions>  &random_numbers) {
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         ID[dimension] = std::floor(random_numbers[dimension] * NumberOfIntervals);
     }
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
-std::array<double,NumberOfDimensions>
-VegasMap<NumberOfDimensions, NumberOfIntervals>::get_interval_offset(const std::vector<double> &random_numbers) const {
+std::array<double, NumberOfDimensions>
+VegasMap<NumberOfDimensions, NumberOfIntervals>::get_interval_offset(const std::array<double, NumberOfDimensions> &random_numbers) const {
 //    auto ID = compute_interval_ID(random_numbers);
-    std::array<double,NumberOfDimensions> interval_offset;
+    std::array<double, NumberOfDimensions> interval_offset;
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         interval_offset[dimension] = random_numbers[dimension] * NumberOfIntervals - ID[dimension];
     }
@@ -65,10 +65,11 @@ VegasMap<NumberOfDimensions, NumberOfIntervals>::get_interval_offset(const std::
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
-std::vector<double> VegasMap<NumberOfDimensions, NumberOfIntervals>::get_x(const std::vector<double> &random_numbers) {
+std::array<double, NumberOfDimensions>
+VegasMap<NumberOfDimensions, NumberOfIntervals>::get_x(const std::array<double, NumberOfDimensions> &random_numbers) {
     compute_interval_ID(random_numbers);
     auto offset = get_interval_offset(random_numbers);
-    std::vector<double> x(NumberOfDimensions);
+    std::array<double, NumberOfDimensions> x;
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         int id = ID[dimension];
         x[dimension] = x_edges[dimension][id] + dx_steps[dimension][id] * offset[dimension];

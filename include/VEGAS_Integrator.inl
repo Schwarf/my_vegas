@@ -10,7 +10,8 @@ void VegasNumericalIntegration<NumberOfDimensions>::Set_Verbose(VegasVerbosity l
 
 template<int NumberOfDimensions>
 void
-VegasNumericalIntegration<NumberOfDimensions>::set_integrand(VEGAS_INTEGRAND &&integrand, void *parameters) {
+VegasNumericalIntegration<NumberOfDimensions>::set_integrand(VEGAS_INTEGRAND<NumberOfDimensions> &&integrand,
+                                                             void *parameters) {
     function_integrand = integrand;
     integrand_parameters = parameters;
     results.clear();
@@ -22,9 +23,9 @@ VegasNumericalIntegration<NumberOfDimensions>::set_integrand(VEGAS_INTEGRAND &&i
 
 template<int NumberOfDimensions>
 void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
-    std::vector<double> random_numbers(NumberOfDimensions);
-    std::vector<double> y(NumberOfDimensions); // Random number between 0 to 1;
-    std::vector<double> x(NumberOfDimensions); // The argument for integrand;
+    std::array<double, NumberOfDimensions> random_numbers{};
+    std::array<double, NumberOfDimensions> x{}; // The argument for integrand;
+    std::array<double, NumberOfDimensions> y{}; // Random number between 0 to 1;
     double evaluated_integrand_value{}; // evaluated integrand value;
     double jacobian{};
     int number_of_iterations{};
@@ -196,9 +197,9 @@ template<int NumberOfDimensions>
 void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, double eps_abs) {
     // We try to reach either relative error (eps_rel) or absolute error (eps_abs)
     // But we also need to make sure chi2 is not bigger than the iteration numbers
-    std::vector<double> random_numbers(NumberOfDimensions);
-    std::vector<double> y(NumberOfDimensions); // Random number between 0 to 1;
-    std::vector<double> x(NumberOfDimensions); // The argument for integrand;
+    std::array<double, NumberOfDimensions> random_numbers{};
+    std::array<double, NumberOfDimensions> y{}; // Random number between 0 to 1;
+    std::array<double, NumberOfDimensions> x{}; // The argument for integrand;
     double evaluated_integrand_value{}; // evaluated integrand value;
     double jacobian{}; // The Jacobian from y to x;
     int starting_number_of_evaluations{50000};

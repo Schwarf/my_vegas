@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include "misc.h"
+
 template<int NumberOfDimensions>
 class VEGAS_Stratify {
 public:
@@ -12,8 +13,7 @@ public:
 
         number_of_hyper_cubes = pow(N_STRAT, NumberOfDimensions);
         // if NumberOfDimensions too large, number_of_hyper_cubes will exceed the MAXIMUM number an integer can store
-        if (number_of_hyper_cubes > maximum_number_of_hyper_cubes || NumberOfDimensions > 9)
-        {
+        if (number_of_hyper_cubes > maximum_number_of_hyper_cubes || NumberOfDimensions > 9) {
             N_STRAT = floor(pow(maximum_number_of_hyper_cubes, 1.0 / NumberOfDimensions));
             number_of_hyper_cubes = pow(N_STRAT, NumberOfDimensions);
         }
@@ -48,8 +48,8 @@ public:
         number_of_expected_evaluations = NEVAL_EXP;
     }
 
-    std::vector<int> get_indices(int index) {
-        std::vector<int> indices(NumberOfDimensions, 0);
+    std::array<int, NumberOfDimensions> get_indices(int index) {
+        std::array<int, NumberOfDimensions> indices{};
         for (int i = 0; i < NumberOfDimensions; i++) {
             int quotient = index / N_STRAT;
             int remainder = index - quotient * N_STRAT;
@@ -59,10 +59,10 @@ public:
         return indices;
     }
 
-    std::vector<double> get_y(int index, std::vector<double> random_uni) {
+    std::array<double, NumberOfDimensions> get_y(int index, const std::array<double, NumberOfDimensions> &random_uni) {
         const double dy = 1.0 / N_STRAT;
-        std::vector<double> res(NumberOfDimensions, 0);
-        std::vector<int> ID = get_indices(index);
+        std::array<double, NumberOfDimensions> res{};
+        std::array<int, NumberOfDimensions> ID = get_indices(index);
         for (int i = 0; i < NumberOfDimensions; i++) {
             res[i] = (random_uni[i] + ID[i]) * dy;
         }

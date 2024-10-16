@@ -52,9 +52,9 @@ private:
 
 //    std::vector<double> average_weight; // size = number_of_dimensions
 //    std::vector<double> std_weight; // size = number_of_dimensions
-    void compute_interval_ID(const std::vector<double> &random_numbers);
+    void compute_interval_ID(const std::array<double, NumberOfDimensions>  &random_numbers);
 
-    std::array<double, NumberOfDimensions> get_interval_offset(const std::vector<double> &random_numbers) const;
+    std::array<double, NumberOfDimensions> get_interval_offset(const std::array<double, NumberOfDimensions>  &random_numbers) const;
 
 
 public:
@@ -67,9 +67,7 @@ public:
     void accumulate_weights(double evaluated_integrand); // evaluated_integrand is the integrand, no other manupulation
     void update_map();
 
-    constexpr int Get_N_Interval() const { return NumberOfIntervals; }
-
-    std::vector<double> get_x(const std::vector<double> &random_numbers);
+    std::array<double, NumberOfDimensions> get_x(const std::array<double, NumberOfDimensions>& random_numbers);
 
     double get_jacobian();
 
