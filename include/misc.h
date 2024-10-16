@@ -6,9 +6,10 @@
 #define ABS_VEGAS_MISC_H
 #include <iostream>
 #include <limits>
+#include <boost/math/special_functions/pow.hpp>
+#include <boost/math/tools/roots.hpp>
 
-
-constexpr double pow_constexpr(double base, unsigned int exp) {
+constexpr double pow_constexpr_double(double base, unsigned int exp) {
     double result = 1;
     while (exp > 0) {
         if (exp % 2 == 1) {
@@ -20,39 +21,28 @@ constexpr double pow_constexpr(double base, unsigned int exp) {
     return result;
 }
 
-constexpr double nth_root_constexpr(double value, unsigned int root, double tolerance ) {
-    double low = 1, high = value, mid, mid_pow;
-    while (low < high) {
-        mid = low + (high - low) / 2;
-        mid_pow = pow_constexpr(mid, root);
-
-        if (mid_pow == value) {
-            return mid;
-        } else if (mid_pow < value) {
-            low = mid + 1;
-        } else {
-            high = mid;
+constexpr long long unsigned pow_constexpr(long long unsigned base, unsigned int exp) {
+    long long unsigned result = 1;
+    while (exp > 0) {
+        if (exp % 2 == 1) {
+            result *= base;
         }
+        base *= base;
+        exp /= 2;
     }
-    return high - 1;
+    return result;
 }
 
-template<unsigned long long N_STRAT, unsigned int NumberOfDimensions>
-struct HyperCubes {
-    static constexpr unsigned long long maximum_number_of_hyper_cubes = 10000;
-
-    static constexpr unsigned long long initial_value = pow_constexpr(N_STRAT, NumberOfDimensions);
-    static constexpr bool needs_adjustment = initial_value > maximum_number_of_hyper_cubes || NumberOfDimensions > 9;
-
-    static constexpr unsigned long long adjusted_N_STRAT = needs_adjustment ? nth_root_constexpr(maximum_number_of_hyper_cubes, NumberOfDimensions) : N_STRAT;
-    static constexpr unsigned long long number_of_hyper_cubes = pow_constexpr(adjusted_N_STRAT, NumberOfDimensions);
-
-};
-
-//int main() {
-//    std::cout << "Number of hyper cubes: " << HyperCubes<2, 10>::number_of_hyper_cubes << std::endl;
-//    return 0;
-//}
-
-
+constexpr long long unsigned nth_root(int x, int n) {
+    if (x == 0) return 0;
+    long long unsigned y = x / 2 > 0 ? x / 2 : 1;
+    while (true) {
+        long long unsigned y_next = ((n - 1) * y + x / pow_constexpr(y, n - 1)) / n;
+        if (y_next == y) {
+            break;
+        }
+        y = y_next;
+    }
+    return y;
+}
 #endif //ABS_VEGAS_MISC_H
