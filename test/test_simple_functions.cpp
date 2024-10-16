@@ -30,6 +30,12 @@ double sinus(std::array<double, dimension> x, void *param) {
 }
 
 template<int dimension>
+double sinus_10dim(std::array<double, dimension> x, void *param) {
+
+    return std::sin(x[0]*x[1]*x[2]*x[3]*x[4]*x[5]*x[6]*x[7]*x[8]*x[9]);
+}
+
+template<int dimension>
 double polynom(std::array<double, dimension> x, void *param) {
     auto x0 = x[0];
     auto x1 = x[1];
@@ -105,6 +111,19 @@ TEST(SimpleFunctionTest, log_exp) {
     constexpr int dimensions{3};
     VegasNumericalIntegration<dimensions> integrator;
     integrator.set_integrand(std::move(log_exp<dimensions>), nullptr);
+    integrator.improve_grid();
+    integrator.integrate();
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+              << integrator.get_chisquare() << std::endl;
+
+    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
+}
+
+TEST(SimpleFunctionTest, sinus_10dim) {
+    constexpr double expected_result{0.00097640369191418530169};
+    constexpr int dimensions{10};
+    VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_integrand(std::move(sinus_10dim<dimensions>), nullptr);
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
