@@ -7,8 +7,9 @@
 #include <iostream>
 #include <limits>
 
-constexpr unsigned long long pow_constexpr(unsigned long long base, unsigned int exp) {
-    unsigned long long result = 1;
+
+constexpr double pow_constexpr(double base, unsigned int exp) {
+    double result = 1;
     while (exp > 0) {
         if (exp % 2 == 1) {
             result *= base;
@@ -19,8 +20,8 @@ constexpr unsigned long long pow_constexpr(unsigned long long base, unsigned int
     return result;
 }
 
-constexpr unsigned long long nth_root_constexpr(unsigned long long value, unsigned int root) {
-    unsigned long long low = 1, high = value, mid, mid_pow;
+constexpr double nth_root_constexpr(double value, unsigned int root, double tolerance ) {
+    double low = 1, high = value, mid, mid_pow;
     while (low < high) {
         mid = low + (high - low) / 2;
         mid_pow = pow_constexpr(mid, root);

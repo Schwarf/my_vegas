@@ -8,18 +8,23 @@
 template<int NumberOfDimensions>
 class VEGAS_Stratify {
 public:
-    VEGAS_Stratify() : N_STRAT{10}, beta{0.75}, maximum_number_of_hyper_cubes{10000} {
-        // N_STRAT = floor(pow(N_EVALUATES_TRAINED/4.0,1.0/NumberOfDimensions));
+    static constexpr int NumberOfStratifications{10};
+    static constexpr double MaximumAllowedNumberOfHypercubes{10000.0};
+    static constexpr double RealNumberOfHyperCubes = pow_constexpr(static_cast<double>(NumberOfStratifications), NumberOfDimensions);
 
-        number_of_hyper_cubes = pow(N_STRAT, NumberOfDimensions);
+
+    VEGAS_Stratify() : beta{0.75} {
+        // NumberOfStratifications = floor(pow(N_EVALUATES_TRAINED/4.0,1.0/NumberOfDimensions));
+
+        number_of_hyper_cubes = pow(NumberOfStratifications, NumberOfDimensions);
         // if NumberOfDimensions too large, number_of_hyper_cubes will exceed the MAXIMUM number an integer can store
-        if (number_of_hyper_cubes > maximum_number_of_hyper_cubes || NumberOfDimensions > 9) {
-            N_STRAT = floor(pow(maximum_number_of_hyper_cubes, 1.0 / NumberOfDimensions));
-            number_of_hyper_cubes = pow(N_STRAT, NumberOfDimensions);
+        if (number_of_hyper_cubes > MaximumAllowedNumberOfHypercubes || NumberOfDimensions > 9) {
+            NumberOfStratifications = floor(pow(MaximumAllowedNumberOfHypercubes, 1.0 / NumberOfDimensions));
+            number_of_hyper_cubes = pow(NumberOfStratifications, NumberOfDimensions);
         }
 
 
-        V_cubic = pow(1.0 / N_STRAT, NumberOfDimensions);
+        V_cubic = pow(1.0 / NumberOfStratifications, NumberOfDimensions);
 
         squared_accumulated_function_values = std::vector<double>(number_of_hyper_cubes, 0);
         accumulated_function_values = std::vector<double>(number_of_hyper_cubes, 0);
@@ -29,20 +34,6 @@ public:
 
     ~VEGAS_Stratify() = default;
 
-private:
-    int N_STRAT;
-    double beta{};
-    double V_cubic{};
-    std::vector<double> squared_accumulated_function_values; // size = (N_STRAT)^(NumberOfDimensions)
-    std::vector<double> accumulated_function_values; // size = (N_STRAT)^(NumberOfDimensions)
-    std::vector<double> counts; // size = (N_STRAT)^(NumberOfDimensions)
-    std::vector<double> hypercubic_weights; // size = (N_STRAT)^(NumberOfDimensions)
-    // int N_EVALUATES_TRAINED; // The evaluates number used to train the stratification
-    int number_of_expected_evaluations{};
-    int number_of_hyper_cubes{};
-    int maximum_number_of_hyper_cubes{};
-
-
 public:
     void Set_NEVAL(int NEVAL_EXP) {
         number_of_expected_evaluations = NEVAL_EXP;
@@ -51,8 +42,8 @@ public:
     std::array<int, NumberOfDimensions> get_indices(int index) {
         std::array<int, NumberOfDimensions> indices{};
         for (int i = 0; i < NumberOfDimensions; i++) {
-            int quotient = index / N_STRAT;
-            int remainder = index - quotient * N_STRAT;
+            int quotient = index / NumberOfStratifications;
+            int remainder = index - quotient * NumberOfStratifications;
             indices[i] = remainder;
             index = quotient;
         }
@@ -60,7 +51,7 @@ public:
     }
 
     std::array<double, NumberOfDimensions> get_y(int index, const std::array<double, NumberOfDimensions> &random_uni) {
-        const double dy = 1.0 / N_STRAT;
+        const double dy = 1.0 / NumberOfStratifications;
         std::array<double, NumberOfDimensions> res{};
         std::array<int, NumberOfDimensions> ID = get_indices(index);
         for (int i = 0; i < NumberOfDimensions; i++) {
@@ -101,8 +92,20 @@ public:
     double get_V_cubic() { return V_cubic; }
 
     int Get_NHYPERCUBICS() { return number_of_hyper_cubes; };
-    // void Set_Stratification_System(int NumberOfDimensions, int NEVAL_TRAIN);
+
+private:
+    double beta{};
+    double V_cubic{};
+    std::vector<double> squared_accumulated_function_values; // size = (NumberOfStratifications)^(NumberOfDimensions)
+    std::vector<double> accumulated_function_values; // size = (NumberOfStratifications)^(NumberOfDimensions)
+    std::vector<double> counts; // size = (NumberOfStratifications)^(NumberOfDimensions)
+    std::vector<double> hypercubic_weights; // size = (NumberOfStratifications)^(NumberOfDimensions)
+    // int N_EVALUATES_TRAINED; // The evaluates number used to train the stratification
+    int number_of_expected_evaluations{};
+    int number_of_hyper_cubes{};
+
 };
+
 
 
 #endif //VEGAS_STRATIFY_H
