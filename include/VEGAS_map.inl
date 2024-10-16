@@ -11,10 +11,8 @@ VegasMap<NumberOfDimensions, NumberOfIntervals>::VegasMap() {
     std::array<double, NumberOfIntervals + 1> x_edges_tmp;
     std::array<double, NumberOfIntervals> dx_steps_tmp;
     for (size_t i = 1; i < NumberOfIntervals + 1; ++i) {
-        x_edges_tmp[i] = i * step_tmp;  // 'step_tmp' needs to be defined before this point
+        x_edges_tmp[i] = i * step_tmp;
     }
-//    std::vector<double> x_edges_tmp((NumberOfIntervals + 1));
-//    std::vector<double> dx_steps_tmp((NumberOfIntervals + 1) - 1, step_tmp);
     for (int i = 1; i < (NumberOfIntervals + 1); i++) {
         x_edges_tmp[i] = i * step_tmp;
     }
