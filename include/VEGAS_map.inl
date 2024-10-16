@@ -54,10 +54,10 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::compute_interval_ID(const 
 }
 
 template<int NumberOfDimensions, int NumberOfIntervals>
-std::vector<double>
+std::array<double,NumberOfDimensions>
 VegasMap<NumberOfDimensions, NumberOfIntervals>::get_interval_offset(const std::vector<double> &random_numbers) const {
 //    auto ID = compute_interval_ID(random_numbers);
-    std::vector<double> interval_offset(NumberOfDimensions);
+    std::array<double,NumberOfDimensions> interval_offset;
     for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
         interval_offset[dimension] = random_numbers[dimension] * NumberOfIntervals - ID[dimension];
     }

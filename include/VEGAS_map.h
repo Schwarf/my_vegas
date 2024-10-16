@@ -54,7 +54,7 @@ private:
 //    std::vector<double> std_weight; // size = number_of_dimensions
     void compute_interval_ID(const std::vector<double> &random_numbers);
 
-    std::vector<double> get_interval_offset(const std::vector<double> &random_numbers) const;
+    std::array<double, NumberOfDimensions> get_interval_offset(const std::vector<double> &random_numbers) const;
 
 
 public:

@@ -48,10 +48,10 @@ struct HyperCubes {
 
 };
 
-int main() {
-    std::cout << "Number of hyper cubes: " << HyperCubes<2, 10>::number_of_hyper_cubes << std::endl;
-    return 0;
-}
+//int main() {
+//    std::cout << "Number of hyper cubes: " << HyperCubes<2, 10>::number_of_hyper_cubes << std::endl;
+//    return 0;
+//}
 
 
 #endif //ABS_VEGAS_MISC_H
