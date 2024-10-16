@@ -21,42 +21,25 @@ enum class VegasVerbosity {
 
 template<int NumberOfDimensions>
 class VegasNumericalIntegration {
+public:
+    VegasNumericalIntegration() =default;
+    ~VegasNumericalIntegration() = default;
+    void set_integrand(VEGAS_INTEGRAND<NumberOfDimensions> &&integrand, void *parameters);
+    void improve_grid();
+    void integrate(double eps_rel = 1e-3, double eps_abs = 1e-9);
+    double get_result();
+    double get_error();
+    double get_chisquare();
 private:
-    VegasVerbosity verbosity;
-
-    VEGAS_INTEGRAND<NumberOfDimensions> function_integrand;
     void *integrand_parameters;
-
-    VegasMap<NumberOfDimensions> map{};
-    VEGAS_Stratify<NumberOfDimensions> strat;
-
+    VegasVerbosity verbosity{VegasVerbosity::Info};
+    VEGAS_INTEGRAND<NumberOfDimensions> function_integrand;
+    VegasMap<NumberOfDimensions> mapping{};
+    VEGAS_Stratify<NumberOfDimensions> stratification;
     std::mt19937 random_number_generator; // Mersenne twister random number engine
     std::uniform_real_distribution<double> distribution; // uniform distribution in double in [0.0, 1.0)
-
     std::vector<double> results;
     std::vector<double> sigma2;
-
-
-public:
-    VegasNumericalIntegration() { verbosity = VegasVerbosity::Info; };
-
-    ~VegasNumericalIntegration() = default;
-
-    void Set_Verbose(VegasVerbosity level);
-
-    void set_integrand(VEGAS_INTEGRAND<NumberOfDimensions> &&integrand, void *parameters);
-
-    void improve_grid();
-
-    void integrate(double eps_rel = 1e-3, double eps_abs = 1e-9);
-
-
-    double get_result();
-
-    double get_error();
-
-    double get_chisquare();
-
 };
 
 #include "VEGAS_Integrator.inl"

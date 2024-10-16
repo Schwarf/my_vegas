@@ -5,13 +5,13 @@
 #include <array>
 #include <string>
 
-// * This is the grid map from y to x:
+// * This is the grid mapping from y to x:
 // * y: the variable upon which we generate uniformly distributed random numbers
 // * x: the integral variable, the upper and lower limit set to be 0 and 1 (The mapping from true integrate limits to [0,1] should be done by users in the integrand)
 // * The function of this class:
 // * 1. Keep track the mapping between y to x
 // * 2. Keep the Jacobian from y to x
-// * 3. Take care of the grid map improvements
+// * 3. Take care of the grid mapping improvements
 template<int NumberOfDimensions, int NumberOfIntervals = 1000>
 class VegasMap {
 private:
@@ -37,7 +37,7 @@ private:
 //    std::vector<std::vector<double> > x_edges_last; // The edges in x, size = number_of_dimensions x number_of_edges;
 //    std::vector<std::vector<double> > dx_steps_last; // The step for each interval, size = number_of_dimensions x number_of_intervals;
 //
-//    std::vector<std::vector<double> > weights; // The weight in each interval, used to improve the grid map, size = number_of_dimensions x number_of_intervals;
+//    std::vector<std::vector<double> > weights; // The weight in each interval, used to improve the grid mapping, size = number_of_dimensions x number_of_intervals;
 //    std::vector<std::vector<double> > counts; // Count the numbers of random numbers in specific interval, size = number_of_dimensions x number_of_intervals;
 //
 //    std::vector<std::vector<double> > smoothed_weights; // Smoothed weights, also renormalized, size = number_of_dimensions x  number_of_intervals

@@ -3,10 +3,6 @@
 #include <iomanip>
 #include <chrono>
 
-template<int NumberOfDimensions>
-void VegasNumericalIntegration<NumberOfDimensions>::Set_Verbose(VegasVerbosity level) {
-    verbosity = level;
-}
 
 template<int NumberOfDimensions>
 void
@@ -16,7 +12,7 @@ VegasNumericalIntegration<NumberOfDimensions>::set_integrand(VEGAS_INTEGRAND<Num
     integrand_parameters = parameters;
     results.clear();
     sigma2.clear();
-    map = VegasMap<NumberOfDimensions>();
+    mapping = VegasMap<NumberOfDimensions>();
     const unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     random_number_generator.seed(seed);
 }
@@ -41,9 +37,9 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
     double Sig2{};
     double accuracy{};
 
-    double dV = strat.get_V_cubic();
+    double dV = stratification.get_V_cubic();
 
-    map.set_alpha(alpha_start);
+    mapping.set_alpha(alpha_start);
     // Warm Up with just MAP improvement
     if (verbosity >= VegasVerbosity::Info) {
         std::cout << "======================================================================================"
@@ -64,14 +60,14 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
             for (int dimension{}; dimension < NumberOfDimensions; ++dimension) {
                 random_numbers[dimension] = distribution(random_number_generator);
             }
-            x = map.get_x(random_numbers);
+            x = mapping.get_x(random_numbers);
             evaluated_integrand_value = function_integrand(x, integrand_parameters);
-            jacobian = map.get_jacobian();
+            jacobian = mapping.get_jacobian();
             if (std::isnan(evaluated_integrand_value) || std::isnan(jacobian)) {
                 evaluation--;
                 continue;
             }
-            map.accumulate_weights(evaluated_integrand_value);
+            mapping.accumulate_weights(evaluated_integrand_value);
             Jf += evaluated_integrand_value * jacobian;
             Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
         }
@@ -79,7 +75,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
         Sig2 = Jf2 / starting_number_of_evaluations - Ih * Ih;
         results[results.size() - 1] += Ih;
         sigma2[sigma2.size() - 1] += Sig2 / starting_number_of_evaluations;
-        map.update_map();
+        mapping.update_map();
         accuracy = sqrt(sigma2[sigma2.size() - 1]) / results[results.size() - 1];
         if (verbosity >= VegasVerbosity::Info) {
             std::cout << "| " << std::setw(6) << warm_iter << " | " << std::setw(12) << starting_number_of_evaluations
@@ -88,7 +84,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
                       << std::setprecision(5) << sqrt(sigma2[sigma2.size() - 1]) << " | "
                       << resetiosflags(std::ios::scientific) << std::fixed << std::setw(8) << std::setprecision(3)
                       << accuracy * 100 << "% | " << resetiosflags(std::ios::fixed) << std::setw(12) << std::scientific
-                      << std::setprecision(5) << map.checking_map() << " |" << std::endl;
+                      << std::setprecision(5) << mapping.checking_map() << " |" << std::endl;
         }
     }
     result = get_result();
@@ -118,29 +114,29 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
         // Every 5 iteration, we can check the accuracy, and addjust the number of evaluation
         // Map and Strata improves every another iteration.
         number_of_iterations++;
-        strat.Set_NEVAL(starting_number_of_evaluations);
+        stratification.Set_NEVAL(starting_number_of_evaluations);
         results.push_back(0);
         sigma2.push_back(0);
         NEVAL_REAL = 0;
-        for (int cube_index = 0; cube_index < strat.Get_NHYPERCUBICS(); cube_index++) {
+        for (int cube_index = 0; cube_index < stratification.Get_NHYPERCUBICS(); cube_index++) {
             Jf = 0.0;
             Jf2 = 0.0;
-            number_of_evaluations = strat.get_expected_events_per_hyper_cube(cube_index);
+            number_of_evaluations = stratification.get_expected_events_per_hyper_cube(cube_index);
             NEVAL_REAL += number_of_evaluations;
             for (int evaluation{}; evaluation < number_of_evaluations; ++evaluation) {
                 for (int i_dim = 0; i_dim < NumberOfDimensions; i_dim++) {
                     random_numbers[i_dim] = distribution(random_number_generator);
                 }
-                y = strat.get_y(cube_index, random_numbers);
-                x = map.get_x(y);
+                y = stratification.get_y(cube_index, random_numbers);
+                x = mapping.get_x(y);
                 evaluated_integrand_value = function_integrand(x, integrand_parameters);
-                jacobian = map.get_jacobian();
+                jacobian = mapping.get_jacobian();
                 if (std::isnan(evaluated_integrand_value) || std::isnan(jacobian)) {
                     evaluation--;
                     continue;
                 }
-                map.accumulate_weights(evaluated_integrand_value);
-                strat.accumulate_weights(cube_index, evaluated_integrand_value * jacobian);
+                mapping.accumulate_weights(evaluated_integrand_value);
+                stratification.accumulate_weights(cube_index, evaluated_integrand_value * jacobian);
                 Jf += evaluated_integrand_value * jacobian;
                 Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
             }
@@ -152,12 +148,12 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
         if (number_of_iterations % 2 != 0) {
             // if (alpha > 0.05)
             // {
-            map.update_map();
+            mapping.update_map();
             // alpha = alpha_start*exp(-number_of_iterations/5.0);
-            // map.set_alpha(alpha);
+            // mapping.set_alpha(alpha);
             // }
         } else {
-            strat.update_hypercubic_weights();
+            stratification.update_hypercubic_weights();
         }
         accuracy = sqrt(sigma2[sigma2.size() - 1]) / results[results.size() - 1];
         if (verbosity >= VegasVerbosity::Info) {
@@ -167,7 +163,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::improve_grid() {
                       << sqrt(sigma2[sigma2.size() - 1]) << " | " << resetiosflags(std::ios::scientific) << std::fixed
                       << std::setw(8) << std::setprecision(3) << accuracy * 100 << "% | "
                       << resetiosflags(std::ios::fixed) << std::setw(12) << std::scientific << std::setprecision(5)
-                      << map.checking_map() << " |" << std::endl;
+                      << mapping.checking_map() << " |" << std::endl;
         }
         if (number_of_iterations % 5 == 0) {
             result = get_result();
@@ -203,7 +199,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
     double evaluated_integrand_value{}; // evaluated integrand value;
     double jacobian{}; // The Jacobian from y to x;
     int starting_number_of_evaluations{50000};
-    double dV = strat.get_V_cubic();
+    double dV = stratification.get_V_cubic();
     int number_of_iterations{};
     double result{};
     double error{};
@@ -223,27 +219,27 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
     }
     while (true) {
         number_of_iterations++;
-        strat.Set_NEVAL(starting_number_of_evaluations);
+        stratification.Set_NEVAL(starting_number_of_evaluations);
         results.push_back(0);
         sigma2.push_back(0);
-        for (int cube_index = 0; cube_index < strat.Get_NHYPERCUBICS(); cube_index++) {
+        for (int cube_index = 0; cube_index < stratification.Get_NHYPERCUBICS(); cube_index++) {
             Jf = 0.0;
             Jf2 = 0.0;
-            number_of_evaluations = strat.get_expected_events_per_hyper_cube(cube_index);
+            number_of_evaluations = stratification.get_expected_events_per_hyper_cube(cube_index);
             number_of_real_evaluations += number_of_evaluations;
             for (int evaluation{}; evaluation < number_of_evaluations; evaluation++) {
                 for (int dimension_index = 0; dimension_index < NumberOfDimensions; dimension_index++) {
                     random_numbers[dimension_index] = distribution(random_number_generator);
                 }
-                y = strat.get_y(cube_index, random_numbers);
-                x = map.get_x(y);
+                y = stratification.get_y(cube_index, random_numbers);
+                x = mapping.get_x(y);
                 evaluated_integrand_value = function_integrand(x, integrand_parameters);
-                jacobian = map.get_jacobian();
+                jacobian = mapping.get_jacobian();
                 if (std::isnan(evaluated_integrand_value) || std::isnan(jacobian)) {
                     evaluation--;
                     continue;
                 }
-                strat.accumulate_weights(cube_index, evaluated_integrand_value * jacobian);
+                stratification.accumulate_weights(cube_index, evaluated_integrand_value * jacobian);
                 Jf += evaluated_integrand_value * jacobian;
                 Jf2 += (evaluated_integrand_value * jacobian) * (evaluated_integrand_value * jacobian);
             }
@@ -252,7 +248,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
             results[results.size() - 1] += Ih;
             sigma2[sigma2.size() - 1] += Sig2 / number_of_evaluations;
         }
-        strat.update_hypercubic_weights();
+        stratification.update_hypercubic_weights();
         accuracy = sqrt(sigma2[sigma2.size() - 1]) / results[results.size() - 1];
         if (verbosity >= VegasVerbosity::Info) {
             std::cout << "| " << std::setw(6) << number_of_iterations << " | " << std::setw(12)
