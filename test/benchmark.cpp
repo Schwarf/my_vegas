@@ -37,6 +37,7 @@ static void BM_VegasPolynom2Integration(benchmark::State& state) {
 
     // VegasNumericalIntegration object setup
     VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_verbosity(VegasVerbosity::None);
     integrator.set_integrand(std::move(polynom2<dimensions>), nullptr);
 
     // Benchmark loop
