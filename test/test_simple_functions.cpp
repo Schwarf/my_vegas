@@ -4,8 +4,6 @@
 
 #include "gtest/gtest.h"
 #include "VEGAS_Integrator.h"
-#include <cmath>
-#include <numbers>
 #include "test_integrands.h"
 
 TEST(SimpleFunctionTest, polynom2) {

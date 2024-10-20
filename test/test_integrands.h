@@ -6,6 +6,7 @@
 #define ABS_VEGAS_TEST_INTEGRANDS_H
 #include <array>
 #include <numbers>
+#include <cmath>
 
 constexpr double sigma_range{3.0};
 
