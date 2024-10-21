@@ -15,8 +15,7 @@ ADD_EXECUTABLE(VEGASINTERTEST VEGAS_Inter_test.cpp)
 #TARGET_LINK_LIBRARIES(VEGASMAPTEST ${ABS_VEGAS_LIBRARIES})
 #TARGET_LINK_LIBRARIES(VEGASINTERTEST ${ABS_VEGAS_LIBRARIES})
 
-add_executable(test_my_vegas test_simple_functions.cpp
-        test_misc.cpp)
-
+add_executable(test_my_vegas test_simple_functions.cpp)
+add_executable(benchmark benchmark.cpp)
 target_link_libraries(test_my_vegas  ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
-
+target_link_libraries(benchmark benchmark::benchmark)

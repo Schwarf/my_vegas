@@ -27,6 +27,7 @@ public:
     void set_integrand(VEGAS_INTEGRAND<NumberOfDimensions> &&integrand, void *parameters);
     void improve_grid();
     void integrate(double eps_rel = 1e-3, double eps_abs = 1e-9);
+    void set_verbosity(const VegasVerbosity & verbose) {verbosity = verbose;}
     double get_result();
     double get_error();
     double get_chisquare();
