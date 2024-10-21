@@ -6,8 +6,6 @@
 #define ABS_VEGAS_MISC_H
 #include <iostream>
 #include <limits>
-#include <boost/math/special_functions/pow.hpp>
-#include <boost/math/tools/roots.hpp>
 
 
 
