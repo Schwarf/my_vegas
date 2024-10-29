@@ -8,7 +8,6 @@
 #include <numbers>
 #include <cmath>
 
-constexpr double sigma_range{3.0};
 
 template<int dimension>
 double sinus_3dim(std::array<double, dimension> x, void *param) {
