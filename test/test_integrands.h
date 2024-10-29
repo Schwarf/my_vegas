@@ -53,7 +53,7 @@ double polynom2(std::array<double, dimension> x, void *param) {
     auto x2 = x[2];
     auto x3 = x[3];
     auto x4 = x[4];
-    return x3 * x4 * (1.0 + x0 + 2.0 * x1 + x2 * x2) * (1.0 + x0 + 2.0 * x1 + x2 * x2) / (1.0 + x2) / (1.0 + x2) /
+    return (1.0 + x3)*(1.0 + x3) * x4*x4 * (5.0 + x0 + 2.0 * x1 + x2 * x2) * (-1.0 + x0 + 2.0 * x1 + x2 * x2) / (1.0 + x2) / (1.0 + x2) /
            (1.0 + x2);
 }
 
