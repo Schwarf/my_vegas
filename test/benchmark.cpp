@@ -2,7 +2,7 @@
 // Created by andreas on 20.10.24.
 //
 #include "benchmark/benchmark.h"
-#include "test_integrands.h"
+#include "integrands.h"
 #include "VEGAS_Integrator.h"
 static void BM_StringCreation(benchmark::State& state) {
     for (auto _ : state)

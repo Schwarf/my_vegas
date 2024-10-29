@@ -4,7 +4,7 @@
 
 #include "gtest/gtest.h"
 #include "VEGAS_Integrator.h"
-#include "test_integrands.h"
+#include "integrands.h"
 
 TEST(SimpleFunctionTest, polynom2) {
     constexpr double expected_result{1.466821492328336};
@@ -26,7 +26,7 @@ TEST(SimpleFunctionTest, polynom) {
     constexpr int dimensions{3};
     VegasNumericalIntegration<dimensions> integrator;
     integrator.set_verbosity(VegasVerbosity::None);
-    integrator.set_integrand(std::move(polynom<dimensions>), nullptr);
+    integrator.set_integrand(std::move(polynom1<dimensions>), nullptr);
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
@@ -40,7 +40,7 @@ TEST(SimpleFunctionTest, sinus) {
     constexpr int dimensions{3};
     VegasNumericalIntegration<dimensions> integrator;
     integrator.set_verbosity(VegasVerbosity::None);
-    integrator.set_integrand(std::move(sinus<dimensions>), nullptr);
+    integrator.set_integrand(std::move(sinus_3dim<dimensions>), nullptr);
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
