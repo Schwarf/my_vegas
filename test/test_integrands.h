@@ -67,4 +67,14 @@ double log_exp(std::array<double, dimension> x, void *param) {
     return jacobi * std::log(x0) * std::exp(x0) * x1 * x1 / (2.0 + x2 * x2 * x2);
 }
 
+template<int dimension>
+double almost_singular(std::array<double, dimension> x, void *param) {
+    constexpr double epsilon = 1.E-16;
+    if(x[0] < epsilon && x[1] < epsilon)
+        return 0.0;
+    return 1.0/std::sqrt(x[0]*x[0] + x[1]*x[1]);
+}
+
+
+
 #endif //ABS_VEGAS_TEST_INTEGRANDS_H
