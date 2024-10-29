@@ -75,6 +75,16 @@ double almost_singular(std::array<double, dimension> x, void *param) {
     return 1.0/std::sqrt(x[0]*x[0] + x[1]*x[1]);
 }
 
+template<int dimension>
+double difficult_for_vegas(std::array<double, dimension> x, void *param) {
+    constexpr auto pi = std::numbers::pi;
+    auto x0 = x[0]*2.0*pi;
+    auto x1 = x[1]*2.0*pi;
+    auto jacobi = 4.0*pi*pi;
+    return std::sin(x0*x1)/x0*x1*jacobi;
+}
+
 
 
 #endif //ABS_VEGAS_TEST_INTEGRANDS_H
+
