@@ -307,7 +307,7 @@ template<int NumberOfDimensions>
 double VegasNumericalIntegration<NumberOfDimensions>::get_result() {
     double res_num = 0;
     double res_den = 0;
-    for (int i = 0; i < results.size(); i++) {
+    for (size_t i{}; i < results.size(); i++) {
         res_num += results[i] / sigma2[i];
         res_den += 1.0 / sigma2[i];
     }
@@ -327,7 +327,7 @@ template<int NumberOfDimensions>
 double VegasNumericalIntegration<NumberOfDimensions>::get_chisquare() {
     double Ifinal = get_result();
     double chi2 = 0;
-    for (int i = 0; i < results.size(); i++) {
+    for (size_t i{}; i < results.size(); i++) {
         chi2 += (results[i] - Ifinal) * (results[i] - Ifinal) / sigma2[i];
     }
     return chi2;

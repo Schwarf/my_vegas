@@ -33,7 +33,6 @@ static void BM_sin_cos_tan(benchmark::State& state) {
 
 static void BM_VegasPolynom2Integration(benchmark::State& state) {
     constexpr int dimensions = 5;
-    constexpr double expected_result = 0.7186547465398496;
 
     // VegasNumericalIntegration object setup
     VegasNumericalIntegration<dimensions> integrator;
