@@ -11,7 +11,7 @@ public:
     VEGAS_Stratify() : N_STRAT{10}, beta{0.75}, maximum_number_of_hyper_cubes{10000} {
         // N_STRAT = floor(pow(N_EVALUATES_TRAINED/4.0,1.0/NumberOfDimensions));
 
-        number_of_hyper_cubes = pow(N_STRAT, NumberOfDimensions);
+        number_of_hyper_cubes =  NumberOfDimensions < 10 ? pow(N_STRAT, NumberOfDimensions) : std::numeric_limits<int>::max();
         // if NumberOfDimensions too large, number_of_hyper_cubes will exceed the MAXIMUM number an integer can store
         if (number_of_hyper_cubes > maximum_number_of_hyper_cubes || NumberOfDimensions > 9) {
             N_STRAT = floor(pow(maximum_number_of_hyper_cubes, 1.0 / NumberOfDimensions));
@@ -39,8 +39,8 @@ private:
     std::vector<double> hypercubic_weights; // size = (N_STRAT)^(NumberOfDimensions)
     // int N_EVALUATES_TRAINED; // The evaluates number used to train the stratification
     int number_of_expected_evaluations{};
-    int number_of_hyper_cubes{};
-    int maximum_number_of_hyper_cubes{};
+    long long number_of_hyper_cubes{};
+    long long maximum_number_of_hyper_cubes{};
 
 
 public:
