@@ -10,7 +10,7 @@ VegasMap<NumberOfDimensions, NumberOfIntervals>::VegasMap() {
     constexpr double step_tmp = 1.0 / NumberOfIntervals;
     std::array<double, NumberOfIntervals + 1> x_edges_tmp;
     std::array<double, NumberOfIntervals> dx_steps_tmp;
-    for (size_t i = 1; i < NumberOfIntervals + 1; ++i) {
+    for (size_t i{}; i < NumberOfIntervals + 1; ++i) {
         x_edges_tmp[i] = i * step_tmp;
     }
 

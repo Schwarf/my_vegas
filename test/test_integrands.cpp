@@ -38,35 +38,6 @@ TEST(SimpleFunctionTest, polynom) {
 }
 
 
-TEST(SimpleFunctionTest, polynom2) {
-    constexpr double expected_result{1.466821492328336};
-    constexpr int dimensions{5};
-    VegasNumericalIntegration<dimensions> integrator;
-    integrator.set_verbosity(VegasVerbosity::None);
-    integrator.set_integrand(std::move(polynom2<dimensions>), nullptr);
-    integrator.improve_grid();
-    integrator.integrate();
-    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
-
-    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
-}
-
-
-
-TEST(SimpleFunctionTest, sinus_3dim) {
-    constexpr double expected_result{0.12243402879673784};
-    constexpr int dimensions{3};
-    VegasNumericalIntegration<dimensions> integrator;
-    integrator.set_verbosity(VegasVerbosity::None);
-    integrator.set_integrand(std::move(sinus_3dim<dimensions>), nullptr);
-    integrator.improve_grid();
-    integrator.integrate();
-    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
-
-    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
-}
 
 TEST(SimpleFunctionTest, sinus_10dim) {
     constexpr double expected_result{0.00097640369191418530169};
@@ -89,6 +60,36 @@ TEST(SimpleFunctionTest, log_exp) {
     VegasNumericalIntegration<dimensions> integrator;
     integrator.set_verbosity(VegasVerbosity::None);
     integrator.set_integrand(std::move(log_exp<dimensions>), nullptr);
+    integrator.improve_grid();
+    integrator.integrate();
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+              << integrator.get_chisquare() << std::endl;
+
+    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
+}
+
+TEST(SimpleFunctionTest, polynom2) {
+    constexpr double expected_result{1.466821492328336};
+    constexpr int dimensions{5};
+    VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_verbosity(VegasVerbosity::None);
+    integrator.set_integrand(std::move(polynom2<dimensions>), nullptr);
+    integrator.improve_grid();
+    integrator.integrate();
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+              << integrator.get_chisquare() << std::endl;
+
+    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
+}
+
+
+
+TEST(SimpleFunctionTest, sinus_3dim) {
+    constexpr double expected_result{0.12243402879673784};
+    constexpr int dimensions{3};
+    VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_verbosity(VegasVerbosity::None);
+    integrator.set_integrand(std::move(sinus_3dim<dimensions>), nullptr);
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "

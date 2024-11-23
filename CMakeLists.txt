@@ -8,7 +8,7 @@ LIST(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 INCLUDE_DIRECTORIES(include)
 find_package(benchmark REQUIRED)
 SET(CMAKE_CXX_STANDARD 20)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pthread -m64 -fsanitize=cfi -flto -fvisibility=hidden -g")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pthread -m64 -fsanitize=cfi -flto -fvisibility=hidden -g")
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pthread -m64 -fsanitize=address -fsanitize=undefined -g")
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
