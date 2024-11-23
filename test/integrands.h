@@ -131,13 +131,28 @@ double gaussian_4d(std::array<double, dimension> x, void* param)
 {
     (void)param;
     // Integrate from [-1,1] for x0,x1,x2,x3
-    auto x0 = (2.0*x[0] - 1.0);
-    auto x1 = (2.0*x[1] - 1.0);
-    auto x2 = (2.0*x[2] - 1.0);
-    auto x3 = (2.0*x[3] - 1.0);
+    auto x0 = (2.0 * x[0] - 1.0);
+    auto x1 = (2.0 * x[1] - 1.0);
+    auto x2 = (2.0 * x[2] - 1.0);
+    auto x3 = (2.0 * x[3] - 1.0);
 
     auto jacobi = 16.0;
     return jacobi * std::exp(-x0 * x0 - x1 * x1 - x2 * x2 - x3 * x3);
+}
+
+template <int dimension>
+double unit_sphere_3d(std::array<double, dimension> x, void* param)
+{
+    (void)param;
+    // Integrate from [-1,1] for x0,x1,x2
+    auto x0 = 2.0 * x[0] - 1.0;
+    auto x1 = 2.0 * x[1] - 1.0;
+    auto x2 = 2.0 * x[2] - 1.0;
+    const auto value = x0 * x0 + x1 * x1 + x2 * x2;
+    constexpr double jacobi = 8.0;
+    if (value < 1.0)
+        return jacobi;
+    return 0.0;
 }
 
 
