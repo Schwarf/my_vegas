@@ -107,7 +107,7 @@ double difficult_for_vegas(std::array<double, dimension> x, void* param)
     constexpr auto pi = std::numbers::pi;
     auto x0 = x[0] * 2.0 * pi;
     auto x1 = x[1] * 2.0 * pi;
-    auto jacobi = 4.0 * pi * pi;
+    constexpr auto jacobi = 4.0 * pi * pi;
     return std::sin(x0 * x1) / x0 * x1 * jacobi;
 }
 
@@ -136,7 +136,7 @@ double gaussian_4d(std::array<double, dimension> x, void* param)
     auto x2 = (2.0 * x[2] - 1.0);
     auto x3 = (2.0 * x[3] - 1.0);
 
-    auto jacobi = 16.0;
+    constexpr auto jacobi = 16.0;
     return jacobi * std::exp(-x0 * x0 - x1 * x1 - x2 * x2 - x3 * x3);
 }
 
@@ -149,7 +149,7 @@ double unit_sphere_3d(std::array<double, dimension> x, void* param)
     auto x1 = 2.0 * x[1] - 1.0;
     auto x2 = 2.0 * x[2] - 1.0;
     const auto value = x0 * x0 + x1 * x1 + x2 * x2;
-    constexpr double jacobi = 8.0;
+    constexpr auto jacobi = 8.0;
     if (value < 1.0)
         return jacobi;
     return 0.0;
