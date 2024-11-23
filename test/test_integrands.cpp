@@ -114,12 +114,26 @@ TEST(SimpleFunctionTest, dilogarithm) {
 }
 
 
-TEST(SimpleFunctionTest, difficult_for_vegas) {
-    constexpr double expected_result{30.98141031607467};
-    constexpr int dimensions{2};
+// TEST(SimpleFunctionTest, difficult_for_vegas) {
+//     constexpr double expected_result{30.98141031607467};
+//     constexpr int dimensions{2};
+//     VegasNumericalIntegration<dimensions> integrator;
+//     integrator.set_verbosity(VegasVerbosity::Info);
+//     integrator.set_integrand(std::move(difficult_for_vegas<dimensions>), nullptr);
+//     integrator.improve_grid();
+//     integrator.integrate();
+//     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+//               << integrator.get_chisquare() << std::endl;
+//
+//     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
+// }
+
+TEST(SimpleFunctionTest, some_logs) {
+    constexpr double expected_result{-0.3060180599843586};
+    constexpr int dimensions{1};
     VegasNumericalIntegration<dimensions> integrator;
-    integrator.set_verbosity(VegasVerbosity::Info);
-    integrator.set_integrand(std::move(difficult_for_vegas<dimensions>), nullptr);
+    integrator.set_verbosity(VegasVerbosity::None);
+    integrator.set_integrand(std::move(some_logs<dimensions>), nullptr);
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "

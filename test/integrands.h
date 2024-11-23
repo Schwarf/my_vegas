@@ -108,6 +108,11 @@ double dilogarithm(std::array<double, dimension> x, void *param) {
     return -std::log(1.0-x[0])/x[0];
 }
 
+template<int dimension>
+double some_logs(std::array<double, dimension> x, void *param) {
+    (void) param;
+    return std::log(x[0])*std::log(x[0])*std::log(1.0-x[0]);
+}
 
 
 
