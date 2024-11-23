@@ -141,3 +141,18 @@ TEST(SimpleFunctionTest, some_logs) {
 
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
+
+
+TEST(SimpleFunctionTest, gaussian_4d) {
+    constexpr double expected_result{4.977294701166026};
+    constexpr int dimensions{4};
+    VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_verbosity(VegasVerbosity::None);
+    integrator.set_integrand(std::move(gaussian_4d<dimensions>), nullptr);
+    integrator.improve_grid();
+    integrator.integrate();
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+              << integrator.get_chi_square() << std::endl;
+
+    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
+}
