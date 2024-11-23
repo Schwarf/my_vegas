@@ -141,7 +141,7 @@ double gaussian_4d(std::array<double, dimension> x, void* param)
 }
 
 template <int dimension>
-double unit_sphere_3d(std::array<double, dimension> x, void* param)
+double volume_unit_sphere_3d(std::array<double, dimension> x, void* param)
 {
     (void)param;
     // Integrate from [-1,1] for x0,x1,x2
@@ -153,6 +153,19 @@ double unit_sphere_3d(std::array<double, dimension> x, void* param)
     if (value < 1.0)
         return jacobi;
     return 0.0;
+}
+
+template <int dimension>
+double surface_unit_sphere_3d(std::array<double, dimension> x, void* param)
+{
+    (void)param;
+    // Integrate from [-1,1] for x0,x1,x2
+    constexpr auto pi = std::numbers::pi;
+    auto x0 = pi * x[0];
+    auto x1 = 2.0 * pi * x[1] ;
+    auto x2 = x[2]; // radius
+    constexpr auto jacobi = 2.0*pi*pi;
+    return jacobi * std::sin(x0);
 }
 
 
