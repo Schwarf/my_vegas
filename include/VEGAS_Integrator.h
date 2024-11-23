@@ -32,7 +32,7 @@ public:
     double get_error();
     double get_chisquare();
 private:
-    void *integrand_parameters;
+    void *integrand_parameters{};
     VegasVerbosity verbosity{VegasVerbosity::Info};
     VEGAS_INTEGRAND<NumberOfDimensions> function_integrand;
     VegasMap<NumberOfDimensions> mapping{};

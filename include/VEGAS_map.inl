@@ -6,16 +6,14 @@
 template<int NumberOfDimensions, int NumberOfIntervals>
 VegasMap<NumberOfDimensions, NumberOfIntervals>::VegasMap() {
 
-    alpha = 0.5;
+    alpha_ = 0.5;
     constexpr double step_tmp = 1.0 / NumberOfIntervals;
     std::array<double, NumberOfIntervals + 1> x_edges_tmp;
     std::array<double, NumberOfIntervals> dx_steps_tmp;
     for (size_t i = 1; i < NumberOfIntervals + 1; ++i) {
         x_edges_tmp[i] = i * step_tmp;
     }
-    for (int i = 1; i < (NumberOfIntervals + 1); i++) {
-        x_edges_tmp[i] = i * step_tmp;
-    }
+
     dx_steps_tmp.fill(step_tmp);
     for (auto &edge: x_edges) {
         edge = x_edges_tmp;
@@ -112,7 +110,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weights() {
         // Handle the first interval (i == 0) outside the loop
         d_tmp = (7.0 * weights[dimension][0] + weights[dimension][1]) / (8.0 * d_sum);
         if (d_tmp != 0.0) {
-            d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha);
+            d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha_);
         }
         smoothed_weights[dimension][0] = d_tmp;
         summed_weights[dimension] += d_tmp;
@@ -122,7 +120,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weights() {
             d_tmp = (weights[dimension][interval - 1] + 6.0 * weights[dimension][interval] +
                      weights[dimension][interval + 1]) / (8.0 * d_sum);
             if (d_tmp != 0.0) {
-                d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha);
+                d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha_);
             }
             smoothed_weights[dimension][interval] = d_tmp;
             summed_weights[dimension] += d_tmp;
@@ -131,7 +129,7 @@ void VegasMap<NumberOfDimensions, NumberOfIntervals>::smooth_weights() {
         d_tmp = (weights[dimension][NumberOfIntervals - 2] + 7.0 * weights[dimension][NumberOfIntervals - 1]) /
                 (8.0 * d_sum);
         if (d_tmp != 0.0) {
-            d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha);
+            d_tmp = pow((d_tmp - 1.0) / log(d_tmp), alpha_);
         }
 
         smoothed_weights[dimension][NumberOfIntervals - 1] = d_tmp;
