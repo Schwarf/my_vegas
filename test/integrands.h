@@ -102,6 +102,13 @@ double difficult_for_vegas(std::array<double, dimension> x, void *param) {
     return std::sin(x0*x1)/x0*x1*jacobi;
 }
 
+template<int dimension>
+double dilogarithm(std::array<double, dimension> x, void *param) {
+    (void) param;
+    return -std::log(1.0-x[0])/x[0];
+}
+
+
 
 
 #endif //ABS_VEGAS_INTEGRANDS_H

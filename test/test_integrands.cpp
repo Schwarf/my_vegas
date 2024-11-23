@@ -99,6 +99,20 @@ TEST(SimpleFunctionTest, sinus_3dim) {
 }
 
 
+TEST(SimpleFunctionTest, dilogarithm) {
+    constexpr double expected_result{std::numbers::pi*std::numbers::pi/6.0};
+    constexpr int dimensions{1};
+    VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_verbosity(VegasVerbosity::None);
+    integrator.set_integrand(std::move(dilogarithm<dimensions>), nullptr);
+    integrator.improve_grid();
+    integrator.integrate();
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+              << integrator.get_chisquare() << std::endl;
+
+    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
+}
+
 
 //TEST(SimpleFunctionTest, difficult_for_vegas) {
 //    constexpr double expected_result{6.679915983895715};
