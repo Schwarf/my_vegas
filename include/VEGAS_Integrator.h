@@ -30,7 +30,7 @@ public:
     void set_verbosity(const VegasVerbosity & verbose) {verbosity = verbose;}
     double get_result();
     double get_error();
-    double get_chisquare();
+    double get_chi_square();
 private:
     void *integrand_parameters{};
     VegasVerbosity verbosity{VegasVerbosity::Info};

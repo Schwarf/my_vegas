@@ -18,7 +18,7 @@ TEST(SimpleFunctionTest, almost_singular) {
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
+              << integrator.get_chi_square() << std::endl;
 
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
@@ -32,7 +32,7 @@ TEST(SimpleFunctionTest, polynom) {
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
+              << integrator.get_chi_square() << std::endl;
     const auto result =  integrator.get_result();
     EXPECT_NEAR(expected_result, result , sigma_range * integrator.get_error());
 }
@@ -48,7 +48,7 @@ TEST(SimpleFunctionTest, sinus_10dim) {
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
+              << integrator.get_chi_square() << std::endl;
 
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
@@ -63,7 +63,7 @@ TEST(SimpleFunctionTest, log_exp) {
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
+              << integrator.get_chi_square() << std::endl;
 
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
@@ -77,7 +77,7 @@ TEST(SimpleFunctionTest, polynom2) {
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
+              << integrator.get_chi_square() << std::endl;
 
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
@@ -93,7 +93,7 @@ TEST(SimpleFunctionTest, sinus_3dim) {
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
+              << integrator.get_chi_square() << std::endl;
 
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
@@ -108,7 +108,7 @@ TEST(SimpleFunctionTest, dilogarithm) {
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
+              << integrator.get_chi_square() << std::endl;
 
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
@@ -137,7 +137,7 @@ TEST(SimpleFunctionTest, some_logs) {
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chisquare() << std::endl;
+              << integrator.get_chi_square() << std::endl;
 
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }

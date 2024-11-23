@@ -262,7 +262,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
             // Every 5 iteration, we check whether we fullfil the condition
             result = get_result();
             error = get_error();
-            chi_squared = get_chisquare();
+            chi_squared = get_chi_square();
             accuracy = error / result;
             if (verbosity >= VegasVerbosity::Info) {
                 std::cout << "| Summary of Last 5 Iter: " << std::setw(14) << std::scientific << std::setprecision(5)
@@ -290,7 +290,7 @@ void VegasNumericalIntegration<NumberOfDimensions>::integrate(double eps_rel, do
     if (verbosity >= VegasVerbosity::Info) {
         result = get_result();
         error = get_error();
-        chi_squared = get_chisquare();
+        chi_squared = get_chi_square();
         accuracy = error / result;
         std::cout << "=======================================================================" << std::endl;
         std::cout << "Summary: " << std::endl;
@@ -324,7 +324,7 @@ double VegasNumericalIntegration<NumberOfDimensions>::get_error() {
 }
 
 template<int NumberOfDimensions>
-double VegasNumericalIntegration<NumberOfDimensions>::get_chisquare() {
+double VegasNumericalIntegration<NumberOfDimensions>::get_chi_square() {
     double Ifinal = get_result();
     double chi2 = 0;
     for (size_t i{}; i < results.size(); i++) {

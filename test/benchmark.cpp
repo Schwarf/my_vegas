@@ -50,7 +50,7 @@ static void BM_VegasPolynom2Integration(benchmark::State& state) {
 
         // Optionally, print the result and error if needed (you might not want this for every benchmark iteration)
         std::cout << integrator.get_result() << " +/- " << integrator.get_error()
-                  << " with chi-square: " << integrator.get_chisquare() << std::endl;
+                  << " with chi-square: " << integrator.get_chi_square() << std::endl;
     }
 }
 
