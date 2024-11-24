@@ -157,19 +157,67 @@ TEST(SimpleFunctionTest, gaussian_4d) {
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
 
-TEST(SimpleFunctionTest, volume_unit_sphere_3d) {
-    constexpr double expected_result{4.0/3.0*std::numbers::pi};
-    constexpr int dimensions{3};
+double expected_volume_unit_sphere(int dimensions) {
+    return std::pow(std::numbers::pi, dimensions / 2.0) / std::tgamma(dimensions / 2.0 + 1);
+}
+
+template <typename Dimension>
+class VolumeUnitSphereTest : public ::testing::Test {
+public:
+    static constexpr int dimensions = Dimension::value;
+    double expected_result = expected_volume_unit_sphere(dimensions);
+};
+
+template <int Dimension>
+struct DimensionWrapper {
+    static constexpr int value = Dimension;
+};
+
+// Checked up to 8 dimensions, but it takes a few minutes
+using DimensionsList = ::testing::Types<
+    DimensionWrapper<1>,
+    DimensionWrapper<2>,
+    DimensionWrapper<3>,
+    DimensionWrapper<4>,
+    DimensionWrapper<5>
+    // DimensionWrapper<6>,
+    // DimensionWrapper<7>,
+    // DimensionWrapper<8>
+>;
+
+// Use TYPED_TEST_SUITE to create the type list for Google Test
+TYPED_TEST_SUITE(VolumeUnitSphereTest, DimensionsList);
+
+TYPED_TEST(VolumeUnitSphereTest, ComputeVolume) {
+    constexpr int dimensions = TestFixture::dimensions;
+    double expected_result = TestFixture::expected_result;
+    std::cout << "Current dimension:"  << dimensions << std::endl;
+    // Create the integrator with the given dimension
     VegasNumericalIntegration<dimensions> integrator;
     integrator.set_verbosity(VegasVerbosity::None);
-    integrator.set_integrand(std::move(volume_unit_sphere_3d<dimensions>), nullptr);
+    integrator.set_integrand(std::move(volume_unit_sphere_3d<dimensions>), nullptr); // Replace with the actual integrand
     integrator.improve_grid();
     integrator.integrate();
-    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
-              << integrator.get_chi_square() << std::endl;
+
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error()
+              << " with chi-square: " << integrator.get_chi_square() << std::endl;
 
     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
 }
+
+// TEST(SimpleFunctionTest, volume_unit_sphere_3d) {
+//     double expected_result{4.0/3.0*std::numbers::pi};
+//     constexpr int dimensions{3};
+//     VegasNumericalIntegration<dimensions> integrator;
+//     integrator.set_verbosity(VegasVerbosity::None);
+//     integrator.set_integrand(std::move(volume_unit_sphere_3d<dimensions>), nullptr);
+//     integrator.improve_grid();
+//     integrator.integrate();
+//     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+//               << integrator.get_chi_square() << std::endl;
+//
+//     EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
+// }
 
 TEST(SimpleFunctionTest, surface_unit_sphere_3d) {
     constexpr double expected_result{4.0*std::numbers::pi};

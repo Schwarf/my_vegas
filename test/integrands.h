@@ -7,6 +7,7 @@
 #include <array>
 #include <numbers>
 #include <cmath>
+#include <iostream>
 
 
 template <int dimension>
@@ -145,21 +146,22 @@ double volume_unit_sphere_3d(std::array<double, dimension> x, void* param)
 {
     (void)param;
     // Integrate from [-1,1] for x0,x1,x2
-    auto x0 = 2.0 * x[0] - 1.0;
-    auto x1 = 2.0 * x[1] - 1.0;
-    auto x2 = 2.0 * x[2] - 1.0;
-    const auto value = x0 * x0 + x1 * x1 + x2 * x2;
-    constexpr auto jacobi = 8.0;
-    if (value < 1.0)
-        return jacobi;
-    return 0.0;
+    double value{};
+    double jacobi{1};
+    for(int dim{}; dim < dimension; ++dim)
+    {
+        x[dim] = 2.0 * x[dim] - 1.0;
+        value += x[dim] * x[dim];
+        jacobi *= 2.0;
+    }
+    return value < 1.0 ? jacobi : 0.0;
 }
 
 template <int dimension>
 double surface_unit_sphere_3d(std::array<double, dimension> x, void* param)
 {
     (void)param;
-    // Integrate from [-1,1] for x0,x1,x2
+    // Integral ranges from [-1,1] for all dimensions
     constexpr auto pi = std::numbers::pi;
     auto x0 = pi * x[0];
     auto x1 = 2.0 * pi * x[1] ;
