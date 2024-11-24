@@ -175,8 +175,23 @@ TEST(SimpleFunctionTest, surface_unit_sphere_3d) {
     constexpr double expected_result{4.0*std::numbers::pi};
     constexpr int dimensions{3};
     VegasNumericalIntegration<dimensions> integrator;
-    integrator.set_verbosity(VegasVerbosity::Info);
+    integrator.set_verbosity(VegasVerbosity::None);
     integrator.set_integrand(std::move(surface_unit_sphere_3d<dimensions>), nullptr);
+    integrator.improve_grid();
+    integrator.integrate();
+    std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "
+              << integrator.get_chi_square() << std::endl;
+
+    EXPECT_NEAR(expected_result, integrator.get_result(), sigma_range * integrator.get_error());
+}
+
+
+TEST(SimpleFunctionTest, arctan_derivative) {
+    constexpr double expected_result{std::numbers::pi*std::numbers::pi*std::numbers::pi/64.0};
+    constexpr int dimensions{3};
+    VegasNumericalIntegration<dimensions> integrator;
+    integrator.set_verbosity(VegasVerbosity::None);
+    integrator.set_integrand(std::move(arctan_derivative<dimensions>), nullptr);
     integrator.improve_grid();
     integrator.integrate();
     std::cout << integrator.get_result() << " +/- " << integrator.get_error() << " with chi-square: "

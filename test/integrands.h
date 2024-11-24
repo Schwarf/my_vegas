@@ -168,5 +168,12 @@ double surface_unit_sphere_3d(std::array<double, dimension> x, void* param)
     return jacobi * std::sin(x0);
 }
 
+template <int dimension>
+double arctan_derivative(std::array<double, dimension> x, void* param)
+{
+    (void)param;
+    // Integrate from [-1,1] for x0,x1,x2
+    return 1.0/(1.0 + x[0]*x[0])/(1.0 + x[1]*x[1])/(1.0 + x[2]*x[2]);
+}
 
 #endif //ABS_VEGAS_INTEGRANDS_H
