@@ -164,8 +164,6 @@ double surface_unit_sphere_3d(std::array<double, dimension> x, void* param)
     // Integral ranges from [-1,1] for all dimensions
     constexpr auto pi = std::numbers::pi;
     auto x0 = pi * x[0];
-    auto x1 = 2.0 * pi * x[1] ;
-    auto x2 = x[2]; // radius
     constexpr auto jacobi = 2.0*pi*pi;
     return jacobi * std::sin(x0);
 }

@@ -4,20 +4,6 @@
 #include "benchmark/benchmark.h"
 #include "integrands.h"
 #include "VEGAS_Integrator.h"
-static void BM_StringCreation(benchmark::State& state) {
-    for (auto _ : state)
-        std::string empty_string;
-}
-// Register the function as a benchmark
-BENCHMARK(BM_StringCreation);
-
-// Define another benchmark
-static void BM_StringCopy(benchmark::State& state) {
-    std::string x = "hello";
-    for (auto _ : state)
-        std::string copy(x);
-}
-BENCHMARK(BM_StringCopy);
 
 static void BM_sin_cos_tan(benchmark::State& state) {
     constexpr int dimension = 3; // Set the number of dimensions
