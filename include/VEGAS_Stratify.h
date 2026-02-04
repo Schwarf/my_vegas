@@ -80,7 +80,7 @@ public:
         double weightSum;
         for (int i = 0; i < number_of_hyper_cubes; i++) {
             weightSum = V_cubic * V_cubic / counts[i] * squared_accumulated_function_values[i] -
-                    std::pow(V_cubic / counts[i] * accumulated_function_values[i], 2);
+                    (V_cubic / counts[i] * accumulated_function_values[i])*(V_cubic / counts[i] * accumulated_function_values[i]);
             hypercubic_weights[i] = std::pow(weightSum, beta);
             cubeVarianceEstimate += hypercubic_weights[i];
         }
