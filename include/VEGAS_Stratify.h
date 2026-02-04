@@ -46,7 +46,7 @@ public:
         number_of_expected_evaluations = NEVAL_EXP;
     }
 
-    std::array<int, NumberOfDimensions> get_indices(int index) {
+    std::array<int, NumberOfDimensions> get_cubic_indices(int index) {
         std::array<int, NumberOfDimensions> indices{};
         for (int i = 0; i < NumberOfDimensions; i++) {
             int quotient = index / N_STRAT;
@@ -60,9 +60,9 @@ public:
     std::array<double, NumberOfDimensions> get_y(int index, const std::array<double, NumberOfDimensions> &random_uni) {
         const double dy = 1.0 / N_STRAT;
         std::array<double, NumberOfDimensions> res{};
-        std::array<int, NumberOfDimensions> ID = get_indices(index);
+        std::array<int, NumberOfDimensions> cubic_indices = get_cubic_indices(index);
         for (int i = 0; i < NumberOfDimensions; i++) {
-            res[i] = (random_uni[i] + ID[i]) * dy;
+            res[i] = (random_uni[i] + cubic_indices[i]) * dy;
         }
         return res;
     }
@@ -76,16 +76,16 @@ public:
     }
 
     void update_hypercubic_weights() {
-        double d_sum = 0;
-        double d_tmp;
+        double cubeVarianceEstimate = 0;
+        double weightSum;
         for (int i = 0; i < number_of_hyper_cubes; i++) {
-            d_tmp = V_cubic * V_cubic / counts[i] * squared_accumulated_function_values[i] -
+            weightSum = V_cubic * V_cubic / counts[i] * squared_accumulated_function_values[i] -
                     std::pow(V_cubic / counts[i] * accumulated_function_values[i], 2);
-            hypercubic_weights[i] = std::pow(d_tmp, beta);
-            d_sum += hypercubic_weights[i];
+            hypercubic_weights[i] = std::pow(weightSum, beta);
+            cubeVarianceEstimate += hypercubic_weights[i];
         }
         for (int i = 0; i < number_of_hyper_cubes; i++) {
-            hypercubic_weights[i] = hypercubic_weights[i] / d_sum;
+            hypercubic_weights[i] = hypercubic_weights[i] / cubeVarianceEstimate;
         }
     }
 
