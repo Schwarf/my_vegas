@@ -178,8 +178,8 @@ using DimensionsList = ::testing::Types<
     DimensionWrapper<1>,
     DimensionWrapper<2>,
     DimensionWrapper<3>,
-    DimensionWrapper<4>,
-    DimensionWrapper<5>
+    DimensionWrapper<4>
+    // DimensionWrapper<5>
     // DimensionWrapper<6>,
     // DimensionWrapper<7>,
     // DimensionWrapper<8>

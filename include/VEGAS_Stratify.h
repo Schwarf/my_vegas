@@ -100,6 +100,14 @@ public:
 
     int Get_NHYPERCUBICS() { return number_of_hyper_cubes; };
     // void Set_Stratification_System(int NumberOfDimensions, int NEVAL_TRAIN);
+
+    void reset_iteration_stats() {
+        std::fill(squared_accumulated_function_values.begin(),
+                  squared_accumulated_function_values.end(), 0.0);
+        std::fill(accumulated_function_values.begin(),
+                  accumulated_function_values.end(), 0.0);
+        std::fill(counts.begin(), counts.end(), 0.0);
+    }
 };
 
 
